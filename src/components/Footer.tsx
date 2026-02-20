@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Facebook, Instagram, Linkedin, MapPin, Mail, Phone } from "lucide-react";
 import { SocialLink } from "@/types";
 import { useTheme } from "@/lib/theme-provider";
+import { cn } from "@/lib/utils";
 import { SiX } from "react-icons/si"; // X (Twitter new logo)
 import { SiThreads } from "react-icons/si"; // Threads logo
 const SOCIAL_LINKS: SocialLink[] = [
@@ -35,17 +36,18 @@ export default function Footer() {
           {/* Logo and description */}
           <div>
             <Link to="/" className="inline-block mb-4">
-              <div className="w-64 h-20 md:w-64 md:h-20 flex items-center justify-center">
-                <img
-                  src={
-                    theme === "dark"
-                      ? "http://ieee.socet.edu.in/wp-content/uploads/2025/09/Group-2085662984-1-scaled.png"
-                      : "http://ieee.socet.edu.in/wp-content/uploads/2025/09/N_Wedge-removebg-preview.png"
-                  }
-                  alt="IEEE SOU SB Logo"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <img
+                src={
+                  theme === "dark"
+                    ? "http://ieee.socet.edu.in/wp-content/uploads/2025/09/Group-2085662984-1-scaled.png"
+                    : "http://ieee.socet.edu.in/wp-content/uploads/2025/09/N_Wedge-removebg-preview.png"
+                }
+                alt="IEEE SOU SB Logo"
+                className={cn(
+                  "w-auto object-contain h-12 md:h-20",
+                  theme === "dark" ? "max-w-[300px]" : "max-w-[350px]"
+                )}
+              />
             </Link>
             <p className="text-xs md:text-sm text-muted-foreground max-w-md">
               Silver Oak University IEEE SB aims to give an interactive platform for students to
