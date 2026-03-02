@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Medal, Globe, GraduationCap, Calendar, User, Trophy, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -168,7 +169,7 @@ export default function Achievement() {
                         Achievement
                     </h1>
                     <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-                        Celebrating every milestone — from individual wins to branch-level honours.
+                        <TypingAnimation text={"Celebrating every milestone — from individual wins to branch-level honours."} />
                     </p>
                 </div>
             </section>

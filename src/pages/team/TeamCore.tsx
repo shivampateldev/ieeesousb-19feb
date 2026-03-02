@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { db } from "@/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
@@ -88,7 +89,7 @@ export default function TeamCore() {
               Core Committee
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto dark:text-muted-foreground-dark">
-              Meet the core team members of each IEEE committee.
+              <TypingAnimation text={"Meet the core team members of each IEEE committee."} />
             </p>
           </div>
 

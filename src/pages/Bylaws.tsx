@@ -118,13 +118,13 @@ export default function Bylaws() {
         <div className="flex flex-col min-h-screen bg-white dark:bg-[#0A0F1C]">
             <Navbar />
 
-            <main className="flex-grow pt-24 pb-20">
+            <main className="flex-grow pt-24 pb-20 page-enter">
                 {/* Page Header */}
                 <div className="border-b border-slate-100 dark:border-slate-800 pb-10 mb-10">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
 
 
-                        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
+                        <h1 className="heading-slide-in text-4xl md:text-5xl font-bold text-slate-900 dark:text-white tracking-tight mb-3">
                             Bylaws of IEEE SOU SB
                         </h1>
 
@@ -138,7 +138,7 @@ export default function Bylaws() {
                                 <a
                                     key={a.id}
                                     href={`#article-${a.id}`}
-                                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#00629B] hover:text-white transition-colors"
+                                    className="quick-nav-pill inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-[#00629B] hover:text-white transition-colors"
                                 >
                                     <ChevronRight className="h-3 w-3" />
                                     Art. {a.id}
@@ -154,7 +154,7 @@ export default function Bylaws() {
                         <section
                             key={article.id}
                             id={`article-${article.id}`}
-                            className="rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm overflow-hidden"
+                            className="card-hover-blue rounded-xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-sm overflow-hidden"
                         >
                             {/* Article Header */}
                             <div className="flex items-center gap-4 px-6 py-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40">

@@ -40,17 +40,17 @@ export default function ContactUs() {
 
   return (
     <PageLayout showFooter>
-      <main className="flex-grow pt-16 pb-16 bg-gray-50 dark:bg-gray-900">
+      <main className="flex-grow pt-16 pb-16 bg-gray-50 dark:bg-gray-900 page-enter">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center pt-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Contact Us</h1>
+            <h1 className="heading-slide-in text-4xl md:text-5xl font-bold mb-4 text-foreground">Contact Us</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Have a question or want to know more about our IEEE SOU SB? Reach out to us and we'll get back to you as soon as possible.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col justify-center shadow-lg backdrop-blur-sm border border-white/20">
+            <div className="card-hover-blue bg-white dark:bg-gray-800 rounded-lg p-8 flex flex-col justify-center shadow-lg backdrop-blur-sm border border-white/20">
               <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-foreground">Name</Label>
@@ -79,7 +79,7 @@ export default function ContactUs() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg backdrop-blur-sm border border-white/20">
+              <div className="card-hover-blue bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg backdrop-blur-sm border border-white/20">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Visit Us</h3>
                 <p className="text-muted-foreground">
                   Silver Oak University, Nr. Bhavik Publications, Opp. Bhagwat Vidyapith, S.G.Highway,
@@ -99,7 +99,7 @@ export default function ContactUs() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg backdrop-blur-sm border border-white/20">
+              <div className="card-hover-blue bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg backdrop-blur-sm border border-white/20">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Contact Information</h3>
                 <ul className="space-y-3">
                   <li className="text-muted-foreground">

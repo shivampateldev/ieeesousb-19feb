@@ -4,6 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 export default function NotFound() {
   const location = useLocation();
@@ -24,7 +25,7 @@ export default function NotFound() {
           <h1 className="text-6xl md:text-8xl font-bold text-primary mb-6">404</h1>
           <h2 className="text-2xl md:text-3xl font-semibold mb-4">Page Not Found</h2>
           <p className="text-muted-foreground max-w-md mx-auto mb-8">
-            We couldn't find the page you're looking for. The page might have been moved or doesn't exist.
+            <TypingAnimation text={"We couldn't find the page you're looking for. The page might have been moved or doesn't exist."} />
           </p>
           <Button asChild>
             <Link to="/" className="inline-flex items-center">

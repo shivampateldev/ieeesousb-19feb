@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 interface Event {
   id: string;
@@ -33,10 +34,10 @@ export default function UpcomingEvents() {
 
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       const upcomingEvents = data.filter(event => new Date(event.date) >= today)
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-      
+
       setEvents(upcomingEvents);
     };
 
@@ -57,7 +58,7 @@ export default function UpcomingEvents() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Upcoming Events</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Join us for exciting upcoming workshops, seminars, and technical sessions.
+              <TypingAnimation text={"Join us for exciting upcoming workshops, seminars, and technical sessions."} />
             </p>
           </div>
 

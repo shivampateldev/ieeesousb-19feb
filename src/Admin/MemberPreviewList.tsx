@@ -14,15 +14,15 @@ import { db } from "../firebase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Eye, UserCircle } from "lucide-react";
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -63,21 +63,19 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
   // Use real-time updates with onSnapshot
   useEffect(() => {
     setLoading(true);
-    
+
     let membersQuery;
     if (activeType === "all") {
       membersQuery = query(
-        collection(db, "members"),
-        orderBy("createdAt", "desc")
+        collection(db, "members")
       );
     } else {
       membersQuery = query(
         collection(db, "members"),
-        where("type", "==", activeType),
-        orderBy("createdAt", "desc")
+        where("type", "==", activeType)
       );
     }
-    
+
     // Set up real-time listener
     const unsubscribe = onSnapshot(
       membersQuery,
@@ -85,7 +83,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
         const membersList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
+        })).sort((a: any, b: any) => (a.name || "").localeCompare(b.name || ""));
         setMembers(membersList);
         setLoading(false);
       },
@@ -94,7 +92,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
         setLoading(false);
       }
     );
-    
+
     // Clean up the listener when component unmounts or dependencies change
     return () => unsubscribe();
   }, [activeType, setError]);
@@ -136,11 +134,10 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
         {memberTypes.map((type) => (
           <button
             key={type.value}
-            className={`px-4 py-3 whitespace-nowrap font-medium transition-colors ${
-              activeType === type.value
+            className={`px-4 py-3 whitespace-nowrap font-medium transition-colors ${activeType === type.value
                 ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-600 hover:bg-gray-50"
-            }`}
+              }`}
             onClick={() => setActiveType(type.value)}
           >
             {type.label}

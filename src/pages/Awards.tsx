@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom"; // ✅ Import Link for routing
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 interface FirestoreAward {
   id: string;
@@ -23,7 +24,7 @@ export default function Awards() {
   useEffect(() => {
     const fetchAwards = async () => {
       const awardsRef = collection(db, "awards");
-      const q = query(awardsRef, orderBy("createdAt", "desc"));
+      const q = query(awardsRef, orderBy("year", "desc"));
       const snapshot = await getDocs(q);
       const data: FirestoreAward[] = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -49,7 +50,7 @@ export default function Awards() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Awards</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore the prestigious awards won by our students and branches, recognizing excellence in various fields.
+              <TypingAnimation text={"Explore the prestigious awards won by our students and branches, recognizing excellence in various fields."} />
             </p>
           </div>
 

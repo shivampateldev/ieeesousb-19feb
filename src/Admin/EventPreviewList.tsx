@@ -38,10 +38,9 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
     setLoading(true);
     try {
       const eventsQuery = query(
-        collection(db, "events"),
-        orderBy("createdAt", "desc")
+        collection(db, "events")
       );
-      
+
       // Set up real-time listener
       const unsubscribe = onSnapshot(
         eventsQuery,
@@ -49,7 +48,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           const eventsList = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          }));
+          })).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setEvents(eventsList);
           setLoading(false);
           console.log("Fetched events:", eventsList.length);
@@ -64,7 +63,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           setLoading(false);
         }
       );
-      
+
       // Clean up the listener when component unmounts
       return () => unsubscribe();
     } catch (err: any) {
@@ -102,7 +101,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
     if (viewMode === "past" && event.isUpcoming) {
       return false;
     }
-    
+
     // Then apply search query filter
     return (
       getEventName(event).toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,36 +146,33 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           <div className="flex flex-wrap gap-2 mb-3 sm:mb-0 w-full sm:w-auto justify-center sm:justify-start">
             <button
               onClick={() => setViewMode("all")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "all"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "all"
                   ? "bg-blue-100 text-blue-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               All Events
             </button>
             <button
               onClick={() => setViewMode("upcoming")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "upcoming"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "upcoming"
                   ? "bg-green-100 text-green-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Upcoming
             </button>
             <button
               onClick={() => setViewMode("past")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "past"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "past"
                   ? "bg-gray-200 text-gray-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Regular
             </button>
           </div>
-          
+
           <div className="w-full sm:w-64">
             <input
               type="text"
@@ -199,8 +195,8 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
       {/* No Events Found */}
       {!loading && filteredEvents.length === 0 && (
         <div className="p-4 sm:p-8 text-center text-gray-500 text-sm sm:text-base">
-          {viewMode !== "all" 
-            ? `No ${viewMode} events found. Change the filter or add new events.` 
+          {viewMode !== "all"
+            ? `No ${viewMode} events found. Change the filter or add new events.`
             : "No events found. Add a new event to get started."}
         </div>
       )}
@@ -391,7 +387,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           </button>
         </div>
       )}
-      
+
       {/* Event count */}
       {!loading && filteredEvents.length > 0 && (
         <div className="px-3 sm:px-6 py-2 sm:py-3 bg-gray-50 border-t text-xs sm:text-sm text-gray-500">

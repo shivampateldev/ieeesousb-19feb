@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 interface Achievement {
   id: string;
@@ -54,7 +55,7 @@ export default function StudentAchievements() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Student Achievements</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Celebrating the outstanding achievements of our talented students.
+              <TypingAnimation text={"Celebrating the outstanding achievements of our talented students."} />
             </p>
           </div>
 

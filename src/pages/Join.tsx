@@ -70,16 +70,16 @@ export default function Join() {
     <div className="flex flex-col min-h-screen bg-white text-black dark:bg-black dark:text-white transition-colors duration-300">
       <Navbar />
 
-      <main className="flex-grow pt-24 pb-16 px-4">
+      <main className="flex-grow pt-24 pb-16 px-4 page-enter">
         <div className="max-w-4xl mx-auto">
           <div className="mb-12 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">Join IEEE SOU SB</h1>
+            <h1 className="heading-slide-in text-4xl md:text-5xl font-bold mb-4">Join IEEE SOU SB</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Get access to cutting-edge information, networking opportunities, career enhancement, and other exclusive member benefits.
             </p>
           </div>
 
-          <div className="rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-900 transition-colors">
+          <div className="card-hover-blue rounded-lg p-8 border border-gray-200 dark:border-gray-700 shadow-lg bg-white dark:bg-gray-900 transition-colors">
             <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">

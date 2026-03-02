@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -66,7 +67,7 @@ export default function TeamFaculty() {
               Faculty Members
             </h1>
             <p className="text-lg text-muted-foreground dark:text-gray-400 max-w-2xl mx-auto">
-              Meet the faculty guiding IEEE SOU Student Branch.
+              <TypingAnimation text={"Meet the faculty guiding IEEE SOU Student Branch."} />
             </p>
           </div>
 

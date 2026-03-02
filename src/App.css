@@ -9,70 +9,172 @@
    Source: FAQ.tsx, Bylaws.tsx (used #00629B, #60B4E8 inline)
    ============================================================ */
 :root {
-  --ieee-blue:          #00629B;
-  --ieee-blue-light:    #60B4E8;
-  --ieee-blue-tint:     rgba(0,98,155,0.10);
-  --ieee-blue-muted:    rgba(0,98,155,0.05);
-  --ieee-blue-border:   rgba(0,98,155,0.20);
+  /* IEEE brand colors (used by badges, eyebrows, headings, etc.) */
+  --ieee-blue: #3b82f6;
+  --ieee-blue-light: #93c5fd;
+  --ieee-blue-tint: rgba(59, 130, 246, 0.10);
+  --ieee-blue-muted: rgba(59, 130, 246, 0.05);
+  --ieee-blue-border: rgba(59, 130, 246, 0.20);
 
-  --wie-purple:         #a855f7;
-  --wie-purple-border:  rgba(168,85,247,0.15);
-  --wie-purple-hover:   rgba(168,85,247,0.45);
-  --wie-purple-tint:    rgba(168,85,247,0.10);
+  --navbar-height: 7rem;
+}
 
-  --sps-green:          #4ade80;
-  --sps-green-border:   rgba(74,222,128,0.15);
-  --sps-green-hover:    rgba(74,222,128,0.45);
-  --sps-green-tint:     rgba(74,222,128,0.10);
+/* IEEE SOU SB — Soft Blue */
+.card-theme-blue {
+  --glass-tint: rgba(59, 130, 246, 0.04);
+  --glass-tint-dark: rgba(59, 130, 246, 0.08);
+  --card-glow-ring: rgba(59, 130, 246, 0.40);
+  --card-glow-deep: rgba(59, 130, 246, 0.30);
+  --card-glow-ring-dark: rgba(59, 130, 246, 0.55);
+  --card-glow-deep-dark: rgba(59, 130, 246, 0.38);
+}
 
-  --sight-rose:         #fb7185;
-  --sight-rose-border:  rgba(251,113,133,0.15);
-  --sight-rose-hover:   rgba(251,113,133,0.45);
-  --sight-rose-tint:    rgba(251,113,133,0.10);
+/* WIE — Soft Purple */
+.card-theme-purple {
+  --glass-tint: rgba(139, 92, 246, 0.04);
+  --glass-tint-dark: rgba(139, 92, 246, 0.08);
+  --card-glow-ring: rgba(139, 92, 246, 0.40);
+  --card-glow-deep: rgba(139, 92, 246, 0.30);
+  --card-glow-ring-dark: rgba(139, 92, 246, 0.55);
+  --card-glow-deep-dark: rgba(139, 92, 246, 0.38);
+}
 
-  --navbar-height: 6rem;
+/* SPS SBC — Soft Green */
+.card-theme-green {
+  --glass-tint: rgba(34, 197, 94, 0.04);
+  --glass-tint-dark: rgba(34, 197, 94, 0.08);
+  --card-glow-ring: rgba(34, 197, 94, 0.40);
+  --card-glow-deep: rgba(34, 197, 94, 0.30);
+  --card-glow-ring-dark: rgba(34, 197, 94, 0.55);
+  --card-glow-deep-dark: rgba(34, 197, 94, 0.38);
+}
+
+/* CS SBC — Soft Amber */
+.card-theme-yellow {
+  --glass-tint: rgba(234, 179, 8, 0.04);
+  --glass-tint-dark: rgba(234, 179, 8, 0.08);
+  --card-glow-ring: rgba(234, 179, 8, 0.40);
+  --card-glow-deep: rgba(234, 179, 8, 0.30);
+  --card-glow-ring-dark: rgba(234, 179, 8, 0.55);
+  --card-glow-deep-dark: rgba(234, 179, 8, 0.38);
+}
+
+/* SIGHT SBG — Soft Rose-Red */
+.card-theme-red {
+  --glass-tint: rgba(239, 68, 68, 0.04);
+  --glass-tint-dark: rgba(239, 68, 68, 0.08);
+  --card-glow-ring: rgba(239, 68, 68, 0.40);
+  --card-glow-deep: rgba(239, 68, 68, 0.30);
+  --card-glow-ring-dark: rgba(239, 68, 68, 0.55);
+  --card-glow-deep-dark: rgba(239, 68, 68, 0.38);
 }
 
 /* ============================================================
    SECTION 2 — ROOT / BASE  (original App.css)
    ============================================================ */
-#root { max-width:100%; margin:0 auto; padding:0; text-align:center; }
-.card { padding:2em; }
-.read-the-docs { color:#888; }
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
 
 /* ============================================================
    SECTION 3 — LOGO  (original App.css)
    ============================================================ */
-.logo { height:6em; padding:1.5em; will-change:filter; transition:filter 300ms; }
-.logo:hover { filter:drop-shadow(0 0 2em #646cffaa); }
-.logo.react:hover { filter:drop-shadow(0 0 2em #61dafbaa); }
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
 @media (prefers-reduced-motion:no-preference) {
-  a:nth-of-type(2) .logo { animation:logo-spin infinite 20s linear; }
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
 }
 
 /* ============================================================
    SECTION 4 — KEYFRAME ANIMATIONS
    ============================================================ */
 @keyframes logo-spin {
-  from { transform:rotate(0deg); } to { transform:rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
+
 @keyframes fadeIn {
-  from { opacity:0; transform:translateY(10px); }
-  to   { opacity:1; transform:translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 /* Source: IEEE.tsx, all sub-branch pages */
 @keyframes fadeInUp {
-  from { opacity:0; transform:translateY(20px); }
-  to   { opacity:1; transform:translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 /* Source: all sub-branch pages — cardMotion entry */
 @keyframes cardReveal {
-  from { opacity:0; transform:translateY(20px) scale(0.98); filter:blur(4px); }
-  to   { opacity:1; transform:translateY(0)    scale(1);    filter:blur(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
+
 /* Source: typewriter cursor */
 @keyframes blink {
-  0%,100% { opacity:1; } 50% { opacity:0; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
 }
 
 /* ============================================================
@@ -80,51 +182,109 @@
    Source: IEEE.tsx, IEEESOUSSB.tsx, IEEESOUSPSSBC.tsx,
            IEEESOUSSIGHTSBG.tsx, IEEEOUSSBWIE.tsx
    ============================================================ */
-.animated { animation-duration:0.5s; animation-fill-mode:both; }
-.fade-in  { animation-name:fadeIn; }
+.animated {
+  animation-duration: 0.7s;
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
 
 /* Replaces Tailwind animate-fade-in-up */
-.animate-fade-in-up { animation:fadeInUp 0.6s ease both; }
+.animate-fade-in-up {
+  animation: fadeInUp 0.85s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
 
-.animation-delay-300  { animation-delay:300ms; }
-.animation-delay-500  { animation-delay:500ms; }
-.animation-delay-700  { animation-delay:700ms; }
-.animation-delay-900  { animation-delay:900ms; }
-.animation-delay-1100 { animation-delay:1100ms; }
-.animation-delay-1300 { animation-delay:1300ms; }
-.animation-delay-1500 { animation-delay:1500ms; }
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animation-delay-500 {
+  animation-delay: 500ms;
+}
+
+.animation-delay-700 {
+  animation-delay: 700ms;
+}
+
+.animation-delay-900 {
+  animation-delay: 900ms;
+}
+
+.animation-delay-1100 {
+  animation-delay: 1100ms;
+}
+
+.animation-delay-1300 {
+  animation-delay: 1300ms;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1500ms;
+}
 
 /* ============================================================
    SECTION 6 — SCROLL REVEAL SYSTEM
    Source: FAQ.tsx, Bylaws.tsx, Contact.tsx, Join.tsx
    ============================================================ */
 .reveal {
-  opacity:0;
-  transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+  opacity: 0;
+  transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), transform 1s cubic-bezier(0.4, 0, 0.2, 1), filter 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.reveal.revealed {
-  opacity:1 !important; transform:none !important; filter:none !important;
-}
-.reveal.fade-up    { transform:translateY(28px); }
-.reveal.fade-right { transform:translateX(-28px); }
-.reveal.fade-left  { transform:translateX(28px); }
-.reveal.zoom-fade  { transform:scale(0.96) translateY(12px); filter:blur(2px); }
 
-.reveal.delay-1 { transition-delay:0.10s; }
-.reveal.delay-2 { transition-delay:0.20s; }
-.reveal.delay-3 { transition-delay:0.30s; }
-.reveal.delay-4 { transition-delay:0.40s; }
-.reveal.delay-5 { transition-delay:0.50s; }
+.reveal.revealed {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.reveal.fade-up {
+  transform: translateY(20px);
+}
+
+.reveal.fade-right {
+  transform: translateX(-20px);
+}
+
+.reveal.fade-left {
+  transform: translateX(20px);
+}
+
+.reveal.zoom-fade {
+  transform: scale(0.97) translateY(10px);
+  filter: blur(1px);
+}
+
+.reveal.delay-1 {
+  transition-delay: 0.10s;
+}
+
+.reveal.delay-2 {
+  transition-delay: 0.20s;
+}
+
+.reveal.delay-3 {
+  transition-delay: 0.30s;
+}
+
+.reveal.delay-4 {
+  transition-delay: 0.40s;
+}
+
+.reveal.delay-5 {
+  transition-delay: 0.50s;
+}
 
 /* ============================================================
    SECTION 7 — HEADING DECORATIVE LINE
    Source: FAQ.tsx, Bylaws.tsx, Contact.tsx, Join.tsx
    ============================================================ */
 .heading-line {
-  height:3px;
-  border-radius:9999px;
-  background:linear-gradient(90deg, var(--ieee-blue) 0%, var(--ieee-blue-light) 100%);
-  margin-top:0.75rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, var(--ieee-blue) 0%, var(--ieee-blue-light) 100%);
+  margin-top: 0.75rem;
 }
 
 /* ============================================================
@@ -132,96 +292,208 @@
    Source: FAQ.tsx, Bylaws.tsx
    ============================================================ */
 .ieee-badge {
-  width:2.5rem; height:2.5rem; border-radius:9999px;
-  background-color:var(--ieee-blue-tint);
-  display:flex; align-items:center; justify-content:center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: var(--ieee-blue-tint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.ieee-badge svg { color:var(--ieee-blue); }
-.dark .ieee-badge svg { color:var(--ieee-blue-light); }
+
+.ieee-badge svg {
+  color: var(--ieee-blue);
+}
+
+.dark .ieee-badge svg {
+  color: var(--ieee-blue-light);
+}
 
 .ieee-eyebrow {
-  font-size:0.75rem; font-weight:600;
-  text-transform:uppercase; letter-spacing:0.1em;
-  color:var(--ieee-blue);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ieee-blue);
 }
-.dark .ieee-eyebrow { color:var(--ieee-blue-light); }
+
+.dark .ieee-eyebrow {
+  color: var(--ieee-blue-light);
+}
 
 /* ============================================================
    SECTION 9 — QUICK NAV PILLS
    Source: FAQ.tsx, Bylaws.tsx
    ============================================================ */
 .quick-nav-pill {
-  display:inline-flex; align-items:center; gap:0.25rem;
-  padding:0.375rem 0.75rem; border-radius:9999px;
-  font-size:0.75rem; font-weight:600; text-decoration:none;
-  background-color:rgb(241 245 249); color:rgb(71 85 105);
-  transition:background-color 0.15s ease, color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  background-color: rgb(241 245 249);
+  color: rgb(71 85 105);
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
-.quick-nav-pill:hover { background-color:var(--ieee-blue); color:#fff; }
-.dark .quick-nav-pill { background-color:rgb(30 41 59); color:rgb(203 213 225); }
-.dark .quick-nav-pill:hover { background-color:#fff; color:rgb(15 23 42); }
+
+.quick-nav-pill:hover {
+  background-color: var(--ieee-blue);
+  color: #fff;
+}
+
+.dark .quick-nav-pill {
+  background-color: rgb(30 41 59);
+  color: rgb(203 213 225);
+}
+
+.dark .quick-nav-pill:hover {
+  background-color: #fff;
+  color: rgb(15 23 42);
+}
 
 /* ============================================================
    SECTION 10 — INFO CARDS  (FAQ.tsx, Bylaws.tsx)
    ============================================================ */
 .info-card {
-  border-radius:0.75rem;
-  border:1px solid rgb(241 245 249);
-  background-color:#fff;
-  box-shadow:0 1px 3px rgba(0,0,0,0.06);
-  overflow:hidden;
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(241 245 249);
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.info-card:hover { transform:translateY(-4px); box-shadow:0 10px 30px -8px rgba(0,0,0,0.12); }
-.dark .info-card { border-color:rgb(30 41 59); background-color:rgba(15,23,42,0.6); }
+
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.12);
+}
+
+.dark .info-card {
+  border-color: rgb(30 41 59);
+  background-color: rgba(15, 23, 42, 0.6);
+}
 
 .info-card-header {
-  display:flex; align-items:center; gap:1rem;
-  padding:1.25rem 1.5rem;
-  border-bottom:1px solid rgb(241 245 249);
-  background-color:rgb(248 250 252);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgb(241 245 249);
+  background-color: rgb(248 250 252);
 }
-.dark .info-card-header { border-bottom-color:rgb(30 41 59); background-color:rgba(30,41,59,0.4); }
+
+.dark .info-card-header {
+  border-bottom-color: rgb(30 41 59);
+  background-color: rgba(30, 41, 59, 0.4);
+}
 
 .info-card-number {
-  width:2.5rem; height:2.5rem; border-radius:9999px;
-  background-color:var(--ieee-blue); color:#fff;
-  display:flex; align-items:center; justify-content:center;
-  font-size:0.875rem; font-weight:700; flex-shrink:0;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: var(--ieee-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
-.info-card-body { padding:1.5rem; }
-.info-card-body p { font-size:0.875rem; color:rgb(71 85 105); line-height:1.7; }
-.dark .info-card-body p { color:rgb(203 213 225); }
+.info-card-body {
+  padding: 1.5rem;
+}
+
+.info-card-body p {
+  font-size: 0.875rem;
+  color: rgb(71 85 105);
+  line-height: 1.7;
+}
+
+.dark .info-card-body p {
+  color: rgb(203 213 225);
+}
 
 /* Bylaws clause list */
-.clause-item { display:flex; gap:0.75rem; font-size:0.875rem; color:rgb(71 85 105); line-height:1.7; }
-.dark .clause-item { color:rgb(203 213 225); }
-.clause-number {
-  flex-shrink:0; width:1.5rem; height:1.5rem; border-radius:9999px;
-  background-color:rgb(241 245 249);
-  font-size:0.75rem; display:flex; align-items:center; justify-content:center;
-  font-weight:600; margin-top:0.125rem;
+.clause-item {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: rgb(71 85 105);
+  line-height: 1.7;
 }
-.dark .clause-number { background-color:rgb(51 65 85); }
+
+.dark .clause-item {
+  color: rgb(203 213 225);
+}
+
+.clause-number {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 9999px;
+  background-color: rgb(241 245 249);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  margin-top: 0.125rem;
+}
+
+.dark .clause-number {
+  background-color: rgb(51 65 85);
+}
 
 /* ============================================================
    SECTION 11 — INFO FOOTER NOTE  (FAQ.tsx, Bylaws.tsx bottom box)
    ============================================================ */
 .info-footer-note {
-  margin-top:1rem; padding:1.25rem; border-radius:0.75rem;
-  background-color:var(--ieee-blue-muted);
-  border:1px solid var(--ieee-blue-border);
-  font-size:0.875rem; color:rgb(71 85 105);
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--ieee-blue-muted);
+  border: 1px solid var(--ieee-blue-border);
+  font-size: 0.875rem;
+  color: rgb(71 85 105);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.info-footer-note:hover { transform:translateY(-2px); box-shadow:0 6px 20px -6px rgba(0,0,0,0.10); }
-.dark .info-footer-note { background-color:rgba(0,98,155,0.10); color:rgb(203 213 225); }
-.info-footer-note strong { color:var(--ieee-blue); }
-.dark .info-footer-note strong { color:var(--ieee-blue-light); }
-.info-footer-note a { color:var(--ieee-blue); text-decoration:underline; text-underline-offset:2px; }
-.info-footer-note a:hover { opacity:0.8; }
-.dark .info-footer-note a { color:var(--ieee-blue-light); }
+
+.info-footer-note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.10);
+}
+
+.dark .info-footer-note {
+  background-color: rgba(0, 98, 155, 0.10);
+  color: rgb(203 213 225);
+}
+
+.info-footer-note strong {
+  color: var(--ieee-blue);
+}
+
+.dark .info-footer-note strong {
+  color: var(--ieee-blue-light);
+}
+
+.info-footer-note a {
+  color: var(--ieee-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.info-footer-note a:hover {
+  opacity: 0.8;
+}
+
+.dark .info-footer-note a {
+  color: var(--ieee-blue-light);
+}
 
 /* ============================================================
    SECTION 12 — GLASS CARD  (all sub-branch pages)
@@ -229,87 +501,166 @@
            IEEESOUSSIGHTSBG.tsx, IEEEOUSSBWIE.tsx
    ============================================================ */
 .glass-card {
-  position:relative; overflow:hidden; border-radius:1rem; padding:2rem;
-  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-  border:1px solid transparent;
-  box-shadow:0 4px 24px -6px rgba(0,0,0,0.08);
-  /* entry animation state */
-  opacity:0; transform:translateY(20px) scale(0.98); filter:blur(4px);
-  transition:
-    opacity    0.7s ease,
-    transform  0.7s ease,
-    filter     0.7s ease,
-    border-color 0.7s ease,
-    box-shadow 0.7s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  padding: 2rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  /* Solid visible background — light mode */
+  background-color: #ffffff;
+  box-shadow: 0 4px 24px -6px rgba(0, 0, 0, 0.10);
+  color: inherit;
+  transition: transform 0.4s cubic-bezier(.4, 0, .2, 1),
+    box-shadow 0.4s cubic-bezier(.4, 0, .2, 1),
+    border-color 0.4s cubic-bezier(.4, 0, .2, 1);
 }
-.glass-card.is-visible { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
-.glass-card:hover { transform:translateY(-6px) !important; }
 
-/* Gradient overlay */
+/* Dark mode base */
+.dark .glass-card {
+  background-color: rgba(15, 23, 42, 0.80);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Gradient colour overlay — sits on top of the white card */
 .glass-card::before {
-  content:""; pointer-events:none;
-  position:absolute; inset:0; border-radius:inherit;
-  background:linear-gradient(135deg, var(--gc-from,transparent) 0%, transparent 50%, var(--gc-to,transparent) 100%);
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+      var(--gc-from, transparent) 0%,
+      transparent 55%,
+      var(--gc-to, transparent) 100%);
+  opacity: 1;
 }
-/* Top-right ambient blob */
+
+/* Top-right ambient colour blob */
 .glass-card::after {
-  content:""; pointer-events:none;
-  position:absolute; top:-4rem; right:-3rem;
-  width:9rem; height:9rem; border-radius:9999px;
-  background-color:var(--gc-blob,transparent); filter:blur(40px);
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  top: -3rem;
+  right: -2.5rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 9999px;
+  background-color: var(--gc-blob, transparent);
+  filter: blur(48px);
+  opacity: 0.8;
 }
 
-/* ---- Accent modifiers ---- */
+/* ---- Accent modifiers (consume card-theme-* variables) ---- */
+
+/* BLUE */
 .glass-card--blue {
-  border-color:rgba(59,130,246,0.15);
-  --gc-from:rgba(59,130,246,0.10); --gc-to:rgba(34,211,238,0.10);
-  --gc-blob:rgba(59,130,246,0.20);
+  border-color: rgba(59, 130, 246, 0.40);
+  --gc-from: rgba(59, 130, 246, 0.10);
+  --gc-to: rgba(34, 211, 238, 0.08);
+  --gc-blob: rgba(59, 130, 246, 0.18);
 }
+
 .glass-card--blue:hover {
-  border-color:rgba(59,130,246,0.45) !important;
-  box-shadow:0 24px 50px -24px rgba(59,130,246,0.45) !important;
-}
-.dark .glass-card--blue:hover {
-  box-shadow:0 24px 50px -24px rgba(56,189,248,0.40) !important;
+  border-color: rgba(59, 130, 246, 0.65);
+  box-shadow: 0 24px 50px -24px rgba(59, 130, 246, 0.30);
 }
 
+.dark .glass-card--blue {
+  border-color: rgba(59, 130, 246, 0.55);
+}
+
+/* GREEN (SPS) */
 .glass-card--green {
-  border-color:var(--sps-green-border);
-  --gc-from:var(--sps-green-tint); --gc-to:rgba(52,211,153,0.10);
-  --gc-blob:rgba(74,222,128,0.20);
+  border-color: rgba(34, 197, 94, 0.40);
+  --gc-from: rgba(34, 197, 94, 0.10);
+  --gc-to: rgba(52, 211, 153, 0.08);
+  --gc-blob: rgba(34, 197, 94, 0.18);
 }
+
 .glass-card--green:hover {
-  border-color:var(--sps-green-hover) !important;
-  box-shadow:0 24px 50px -24px var(--sps-green-hover) !important;
+  border-color: rgba(34, 197, 94, 0.65);
+  box-shadow: 0 24px 50px -24px rgba(34, 197, 94, 0.30);
 }
 
-.glass-card--rose {
-  border-color:var(--sight-rose-border);
-  --gc-from:var(--sight-rose-tint); --gc-to:rgba(252,165,165,0.10);
-  --gc-blob:rgba(251,113,133,0.20);
-}
-.glass-card--rose:hover {
-  border-color:var(--sight-rose-hover) !important;
-  box-shadow:0 24px 50px -24px var(--sight-rose-hover) !important;
+.dark .glass-card--green {
+  border-color: rgba(34, 197, 94, 0.55);
 }
 
+/* PURPLE (WIE) */
 .glass-card--purple {
-  border-color:var(--wie-purple-border);
-  --gc-from:var(--wie-purple-tint); --gc-to:rgba(196,181,253,0.10);
-  --gc-blob:rgba(168,85,247,0.18);
+  border-color: rgba(139, 92, 246, 0.40);
+  --gc-from: rgba(139, 92, 246, 0.10);
+  --gc-to: rgba(196, 181, 253, 0.08);
+  --gc-blob: rgba(139, 92, 246, 0.18);
 }
+
 .glass-card--purple:hover {
-  border-color:var(--wie-purple-hover) !important;
-  box-shadow:0 20px 40px -18px rgba(93,30,248,0.12) !important;
+  border-color: rgba(139, 92, 246, 0.65);
+  box-shadow: 0 20px 40px -18px rgba(139, 92, 246, 0.30);
+}
+
+.dark .glass-card--purple {
+  border-color: rgba(139, 92, 246, 0.55);
+}
+
+/* RED (SIGHT) */
+.glass-card--red {
+  border-color: rgba(239, 68, 68, 0.40);
+  --gc-from: rgba(239, 68, 68, 0.10);
+  --gc-to: rgba(252, 165, 165, 0.08);
+  --gc-blob: rgba(239, 68, 68, 0.18);
+}
+
+.glass-card--red:hover {
+  border-color: rgba(239, 68, 68, 0.65);
+  box-shadow: 0 24px 50px -24px rgba(239, 68, 68, 0.30);
+}
+
+.dark .glass-card--red {
+  border-color: rgba(239, 68, 68, 0.55);
+}
+
+/* YELLOW (CS) */
+.glass-card--yellow {
+  border-color: rgba(234, 179, 8, 0.40);
+  --gc-from: rgba(234, 179, 8, 0.10);
+  --gc-to: rgba(253, 224, 71, 0.08);
+  --gc-blob: rgba(234, 179, 8, 0.18);
+}
+
+.glass-card--yellow:hover {
+  border-color: rgba(234, 179, 8, 0.65);
+  box-shadow: 0 20px 40px -18px rgba(234, 179, 8, 0.30);
+}
+
+.dark .glass-card--yellow {
+  border-color: rgba(234, 179, 8, 0.55);
 }
 
 /* Stagger delays */
-.glass-card--delay-1 { transition-delay: 80ms; }
-.glass-card--delay-2 { transition-delay:180ms; }
-.glass-card--delay-3 { transition-delay:280ms; }
+.glass-card--delay-1 {
+  transition-delay: 120ms;
+}
+
+.glass-card--delay-2 {
+  transition-delay: 260ms;
+}
+
+.glass-card--delay-3 {
+  transition-delay: 400ms;
+}
 
 /* Inner content wrapper */
-.glass-card__content { position:relative; z-index:10; }
+.glass-card__content {
+  position: relative;
+  z-index: 10;
+}
 
 /* ============================================================
    SECTION 13 — TYPEWRITER CURSOR
@@ -317,76 +668,186 @@
            IEEESOUSSIGHTSBG.tsx, IEEEOUSSBWIE.tsx
    ============================================================ */
 .typewriter-wrap::after {
-  content:"|"; display:inline-block; margin-left:1px;
-  animation:blink 0.75s step-end infinite;
-  color:currentColor; opacity:0.7;
+  content: "|";
+  display: inline-block;
+  margin-left: 1px;
+  animation: blink 0.75s step-end infinite;
+  color: currentColor;
+  opacity: 0.7;
 }
 
 /* ============================================================
    SECTION 14 — IEEE.tsx HISTORY SECTION
    ============================================================ */
 .ieee-history-section {
-  margin-bottom:3rem;
-  background-color:rgba(0,0,0,0.03);
-  padding:2rem; border-radius:0.75rem;
-  box-shadow:0 4px 16px -4px rgba(0,0,0,0.08);
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 3rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 2rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.ieee-history-section:hover { transform:translateY(-4px); box-shadow:0 12px 32px -8px rgba(0,0,0,0.12); }
-.ieee-history-section h2 { font-size:1.5rem; font-weight:600; margin-bottom:0.75rem; }
+
+.ieee-history-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.12);
+}
+
+.ieee-history-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
 
 .ieee-accent-bar {
-  width:4rem; height:4px; border-radius:9999px;
-  background-color:rgba(59,130,246,0.80); margin-bottom:1.5rem;
+  width: 4rem;
+  height: 4px;
+  border-radius: 9999px;
+  background-color: rgba(59, 130, 246, 0.80);
+  margin-bottom: 1.5rem;
 }
+
 .ieee-page-divider {
-  width:6rem; height:6px; border-radius:9999px;
-  background-color:var(--ieee-blue); margin:0 auto 2rem;
+  width: 6rem;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: var(--ieee-blue);
+  margin: 0 auto 2rem;
 }
 
 /* ============================================================
    SECTION 15 — CONTACT.tsx / JOIN.tsx FORM & INFO BOXES
    ============================================================ */
 .form-card {
-  background-color:#fff; border-radius:0.5rem; padding:2rem;
-  box-shadow:0 4px 16px -4px rgba(0,0,0,0.10);
-  border:1px solid rgba(255,255,255,0.20);
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.form-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px -12px rgba(0,0,0,0.14); }
-.dark .form-card { background-color:rgb(31 41 55); }
+
+.form-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.14);
+}
+
+.dark .form-card {
+  background-color: rgb(31 41 55);
+}
 
 .info-box {
-  background-color:#fff; border-radius:0.5rem; padding:1.5rem;
-  box-shadow:0 4px 16px -4px rgba(0,0,0,0.10);
-  border:1px solid rgba(255,255,255,0.20);
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.info-box:hover { transform:translateY(-4px); box-shadow:0 16px 40px -12px rgba(0,0,0,0.14); }
-.dark .info-box { background-color:rgb(31 41 55); }
+
+.info-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.14);
+}
+
+.dark .info-box {
+  background-color: rgb(31 41 55);
+}
 
 .join-card {
-  border-radius:0.5rem; padding:2rem;
-  border:1px solid rgb(229 231 235); box-shadow:0 4px 16px -4px rgba(0,0,0,0.10);
-  background-color:#fff; transition:transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  border: 1px solid rgb(229 231 235);
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.10);
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.join-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px -12px rgba(0,0,0,0.14); }
-.dark .join-card { border-color:rgb(55 65 81); background-color:rgb(17 24 39); }
+
+.join-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.14);
+}
+
+.dark .join-card {
+  border-color: rgb(55 65 81);
+  background-color: rgb(17 24 39);
+}
 
 /* ============================================================
    SECTION 16 — SONNER TOAST OVERRIDES
    Source: Contact.tsx, Join.tsx
    ============================================================ */
 [data-sonner-toast] {
-  font-size:1.05rem !important;
-  padding:1.1rem 1.25rem !important;
+  font-size: 1.05rem !important;
+  padding: 1.1rem 1.25rem !important;
 }
 
 /* ============================================================
    SECTION 17 — RESPONSIVE FIXES  (original App.css)
    ============================================================ */
 @media (max-width:640px) {
-  .container { padding-left:1rem; padding-right:1rem; }
-  h1 { font-size:1.75rem; }
-  h2 { font-size:1.50rem; }
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  h2 {
+    font-size: 1.50rem;
+  }
+}
+
+/* ============================================================
+   SECTION 18 — PAGE ENTER ANIMATION + CARD HOVER + NAV PILLS
+   ============================================================ */
+
+/* Smooth page slide-up on load */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-enter {
+  animation: pageEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Card hover — blue tint (95% lightness, 70% sat) */
+.card-hover-blue {
+  transition: background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    border-color 0.3s ease !important;
+  cursor: default;
+}
+
+.card-hover-blue:hover,
+.card-hover-blue:focus-within {
+  background-color: hsl(210 70% 95%) !important;
+  box-shadow: 0 10px 36px hsl(210 60% 50% / 0.14) !important;
+  transform: translateY(-3px) !important;
+  border-color: hsl(210 60% 78% / 0.8) !important;
+}
+
+.dark .card-hover-blue:hover,
+.dark .card-hover-blue:focus-within {
+  background-color: hsl(210 25% 17%) !important;
+  box-shadow: 0 10px 36px hsl(210 50% 40% / 0.20) !important;
+  border-color: hsl(210 40% 42% / 0.45) !important;
+}
+
+/* Quick-nav pills — dark mode hover fix */
+.dark a.quick-nav-pill:hover,
+.dark a.quick-nav-pill:focus {
+  background-color: #ffffff !important;
+  color: hsl(222 47% 11%) !important;
 }

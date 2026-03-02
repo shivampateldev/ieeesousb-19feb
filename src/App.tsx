@@ -45,6 +45,8 @@ import Bylaws from "./pages/Bylaws";
 import FAQ from "./pages/FAQ";
 import AIAssistant from "./components/AIAssistant";
 import ScrollProgressBar from "@/components/ScrollProgressBar";
+import ScrollToTop from "@/components/ScrollToTop";
+import ScrollRevealProvider from "@/components/ScrollRevealProvider";
 // Ensure that the query client is correctly created
 const queryClient = new QueryClient();
 function App() {
@@ -56,6 +58,8 @@ function App() {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
+            <ScrollRevealProvider />
             <ScrollProgressBar />
             <AIAssistant />
             <Routes>

@@ -38,9 +38,9 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
     try {
       const awardsQuery = query(
         collection(db, "awards"),
-        orderBy("createdAt", "desc")
+        orderBy("year", "desc")
       );
-      
+
       // Set up real-time listener
       const unsubscribe = onSnapshot(
         awardsQuery,
@@ -59,7 +59,7 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
           setLoading(false);
         }
       );
-      
+
       // Clean up the listener when component unmounts
       return () => unsubscribe();
     } catch (err: any) {
@@ -99,7 +99,7 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-  
+
       {/* Search Bar */}
       <div className="p-4">
         <input

@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 interface Award {
   id: string;
@@ -54,7 +55,7 @@ export default function BranchAwards() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Branch Awards</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Recognizing excellence and achievements of our IEEE branches.
+              <TypingAnimation text={"Recognizing excellence and achievements of our IEEE branches."} />
             </p>
           </div>
 

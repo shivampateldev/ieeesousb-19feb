@@ -49,8 +49,10 @@ function CountUpNumber({
   }, [end, duration, hasAnimated]);
 
   return (
-    <div ref={countRef} className="font-black text-5xl md:text-6xl text-primary tabular-nums">
-      {prefix}{count.toLocaleString()}{suffix}
+    <div ref={countRef} className="font-black text-5xl md:text-6xl text-primary tabular-nums relative">
+      <span className="inline-block transition-all duration-300">
+        {prefix}{count.toLocaleString()}{suffix}
+      </span>
     </div>
   );
 }
@@ -60,13 +62,14 @@ export default function CountUpSection() {
 
   return (
     <div ref={sectionRef} className="py-4 bg-primary/5 w-full overflow-hidden relative">
-      {/* Large decorative background text */}
+      {/* Fixed background text that doesn't move */}
       <div
         aria-hidden
         className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden"
       >
         <span
           className="text-[18vw] font-black text-primary/5 dark:text-primary/5 whitespace-nowrap leading-none"
+          style={{ transform: 'translateZ(0)' }}
         >
           IEEE SOU
         </span>
@@ -86,18 +89,24 @@ export default function CountUpSection() {
           {FACTS.map((fact, index) => (
             <div
               key={index}
-              className={`reveal pop delay-${index + 1} text-center p-6 glass rounded-2xl shadow-lg border border-primary/10 relative overflow-hidden`}
+              className={`reveal pop delay-${index + 1} text-center p-6 glass rounded-2xl shadow-lg border border-primary/10 relative overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm`}
+              style={{ 
+                transform: 'translateZ(0)',
+                backfaceVisibility: 'hidden'
+              }}
             >
               {/* Inner glow */}
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl pointer-events-none" />
-              <CountUpNumber
-                end={fact.value}
-                prefix={fact.prefix}
-                suffix={fact.suffix}
-              />
-              <p className="text-base mt-3 font-medium text-muted-foreground uppercase tracking-widest text-xs">
-                {fact.label}
-              </p>
+              <div className="relative z-10">
+                <CountUpNumber
+                  end={fact.value}
+                  prefix={fact.prefix}
+                  suffix={fact.suffix}
+                />
+                <p className="text-base mt-3 font-medium text-muted-foreground uppercase tracking-widest text-xs">
+                  {fact.label}
+                </p>
+              </div>
             </div>
           ))}
         </div>

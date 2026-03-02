@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Linkedin, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { db } from "@/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
@@ -83,13 +84,6 @@ export default function TeamExecutive() {
   const prev = () => canPrev && setSelectedYear(YEARS[currentIdx - 1]);
   const next = () => canNext && setSelectedYear(YEARS[currentIdx + 1]);
 
-  // Show 3 years: prev · selected · next  (edge-safe)
-  const visibleYears = [
-    YEARS[currentIdx - 1] ?? null,
-    YEARS[currentIdx],
-    YEARS[currentIdx + 1] ?? null,
-  ];
-
   // ── render ───────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0F172A]">
@@ -103,18 +97,18 @@ export default function TeamExecutive() {
               Executive Team
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Meet the executive members of each IEEE society.
+              <TypingAnimation text={"Meet the executive members of each IEEE society."} />
             </p>
           </div>
 
           {/* ── Year Carousel ── */}
-          <div className="flex items-center justify-center gap-4 mb-10">
+          <div className="flex items-center justify-center gap-4 mb-10 w-full overflow-hidden">
             {/* Left arrow */}
             <button
               onClick={prev}
               disabled={!canPrev}
               aria-label="Previous year"
-              className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-200
+              className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full border transition-all duration-500 ease-in-out z-20
                 ${canPrev
                   ? "border-primary text-primary hover:bg-primary hover:text-white cursor-pointer"
                   : "border-border text-muted-foreground opacity-40 cursor-not-allowed"
@@ -123,28 +117,40 @@ export default function TeamExecutive() {
               <ChevronLeft className="h-5 w-5" />
             </button>
 
-            {/* 3-year strip */}
-            <div className="flex items-center gap-2">
-              {visibleYears.map((yr, i) => {
-                if (yr === null) {
-                  // placeholder to keep layout stable
-                  return <div key={`ph-${i}`} className="w-20 h-10" />;
-                }
-                const isCenter = yr === selectedYear;
-                return (
-                  <button
-                    key={yr}
-                    onClick={() => setSelectedYear(yr)}
-                    className={`px-5 py-2 rounded-full text-sm font-semibold border transition-all duration-200
-                      ${isCenter
-                        ? "bg-primary text-primary-foreground border-primary shadow-md scale-110"
-                        : "bg-background text-muted-foreground border-border hover:border-primary hover:text-primary scale-95 opacity-70"
-                      }`}
-                  >
-                    {yr}
-                  </button>
-                );
-              })}
+            {/* Sliding Window */}
+            <div
+              className="relative w-64 h-12 flex items-center justify-center"
+              style={{
+                maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+              }}
+            >
+              {/* Static Blue Pill (Center) */}
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[80px] h-[40px] bg-primary rounded-full shadow-md z-0 pointer-events-none" />
+
+              {/* Moving Track */}
+              <div
+                className="absolute left-1/2 top-0 h-full flex items-center transition-transform duration-500 ease-in-out z-10"
+                style={{
+                  transform: `translateX(calc(-${currentIdx * 80 + 40}px))`,
+                }}
+              >
+                {YEARS.map((yr) => {
+                  const isCenter = yr === selectedYear;
+                  return (
+                    <button
+                      key={yr}
+                      onClick={() => setSelectedYear(yr)}
+                      className={`w-[80px] h-[40px] flex justify-center items-center flex-shrink-0 text-sm font-semibold transition-all duration-500 cursor-pointer
+                        ${isCenter
+                          ? "text-primary-foreground scale-110 shadow-sm"
+                          : "text-muted-foreground hover:text-primary hover:scale-[1.02]"}`}
+                    >
+                      {yr}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Right arrow */}
@@ -152,7 +158,7 @@ export default function TeamExecutive() {
               onClick={next}
               disabled={!canNext}
               aria-label="Next year"
-              className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all duration-200
+              className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full border transition-all duration-500 ease-in-out z-20
                 ${canNext
                   ? "border-primary text-primary hover:bg-primary hover:text-white cursor-pointer"
                   : "border-border text-muted-foreground opacity-40 cursor-not-allowed"

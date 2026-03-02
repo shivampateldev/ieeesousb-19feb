@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Medal, Trophy, Globe, GraduationCap, Calendar, User } from "lucide-react";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 // ─── Static Mock Data ──────────────────────────────────────────────────────────
 
@@ -135,7 +136,7 @@ export default function Achievements() {
                         Our Achievements
                     </h1>
                     <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                        Recognizing excellence across students, individuals, and the IEEE SOU SB branch — celebrating every milestone.
+                        <TypingAnimation text={"Recognizing excellence across students, individuals, and the IEEE SOU SB branch — celebrating every milestone."} />
                     </p>
                 </div>
             </section>

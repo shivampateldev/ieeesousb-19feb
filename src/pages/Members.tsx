@@ -4,6 +4,7 @@ import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 type MemberType = {
   id: string;
@@ -329,7 +330,7 @@ export default function Members() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Members</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Meet the dedicated team behind IEEE SOU Student Branch who are working to create a vibrant technical community.
+              <TypingAnimation text={"Meet the dedicated team behind IEEE SOU Student Branch who are working to create a vibrant technical community."} />
             </p>
           </div>
 

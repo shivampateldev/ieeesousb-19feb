@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { TypingAnimation } from "@/components/TypingAnimation";
 
 export default function Newsletter() {
   return (
@@ -11,7 +12,7 @@ export default function Newsletter() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Newsletter</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Stay updated with our latest news, events, and achievements.
+              <TypingAnimation text={"Stay updated with our latest news, events, and achievements."} />
             </p>
           </div>
 
