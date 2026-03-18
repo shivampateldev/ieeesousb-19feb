@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -26,18 +27,20 @@ export default function TeamFaculty() {
       try {
         const membersRef = collection(db, "members");
         const q = query(
-          membersRef,
-          where("type", "==", "faculty"),
-          orderBy("createdAt", "desc")
-        );
+  membersRef,
+  where("type", "==", "faculty")
+);
 
-        const snapshot = await getDocs(q);
-        const data: Member[] = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Member[];
+const snapshot = await getDocs(q);
 
-        setFacultyMembers(data);
+const data: Member[] = snapshot.docs
+  .map((doc) => ({
+    id: doc.id,
+    ...(doc.data() as any),
+  }))
+  .sort((a: any, b: any) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
+
+setFacultyMembers(data);
       } catch (error) {
         console.error("Error fetching faculty members:", error);
       }
@@ -56,6 +59,10 @@ export default function TeamFaculty() {
   const foundingMember = filtered.find((member) => member.founding);
   const otherMembers = filtered.filter((member) => !member.founding);
 
+  // Non-founding members are already sorted by displayOrder from the .sort() call during fetch.
+  // DO NOT re-sort here — it would override the displayOrder.
+  const sortedOtherMembers = otherMembers; // Already sorted by displayOrder ascending
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -66,7 +73,7 @@ export default function TeamFaculty() {
               Faculty Members
             </h1>
             <p className="text-lg text-muted-foreground dark:text-gray-400 max-w-2xl mx-auto">
-              Meet the faculty guiding IEEE SOU Student Branch.
+              <TypingAnimation text={"Meet the faculty guiding IEEE SOU Student Branch."} />
             </p>
           </div>
 
@@ -132,7 +139,7 @@ export default function TeamFaculty() {
               Faculty Advisors
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {otherMembers.map((member) => (
+              {sortedOtherMembers.map((member) => (
                 <div
                   key={member.id}
                   className="bg-white dark:bg-gray-900 glass rounded-xl overflow-hidden shadow-md hover:shadow-lg 

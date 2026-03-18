@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { 
@@ -7,7 +7,8 @@ import {
   Award, 
   Users, 
   LogOut,
-  CalendarDays  // Added this import
+  CalendarDays,
+  Landmark  // Added this import
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,11 @@ interface AdminLayoutProps {
 
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, onTabChange }) => {
   const [confirmLogout, setConfirmLogout] = useState(false);
+  
+  // Debug tab changes
+  useEffect(() => {
+    console.log("AdminLayout: activeTab changed to:", activeTab);
+  }, [activeTab]);
 
   const handleLogout = async () => {
     try {
@@ -72,7 +78,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, onTabCha
                 onClick={() => onTabChange("awards")}
               >
                 <Award className="h-4 w-4 mr-2" />
-                Awards
+                Achievements
               </Button>
               
               <Button
@@ -81,7 +87,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, onTabCha
                 onClick={() => onTabChange("members")}
               >
                 <Users className="h-4 w-4 mr-2" />
-                Members
+                Team
+              </Button>
+              
+              <Button
+                variant={activeTab === "journey" ? "default" : "ghost"}
+                className="w-full justify-start h-9 xl:h-10 text-sm"
+                onClick={() => onTabChange("journey")}
+              >
+                <Landmark className="h-4 w-4 mr-2" />
+                Our Journey
               </Button>
             </nav>
             
@@ -169,30 +184,64 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, activeTab, onTabCha
                 </Card>
               )}
 
-              <Tabs value={activeTab} onValueChange={onTabChange} className="mt-3 sm:mt-4">
-                <TabsList className="grid grid-cols-5 w-full h-auto min-h-[60px] sm:min-h-[70px] p-1">
-                  <TabsTrigger value="dashboard" className="flex flex-col items-center justify-center py-1 sm:py-2 h-full">
-                    <LayoutDashboard className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 line-clamp-1">Dashboard</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="events" className="flex flex-col items-center justify-center py-1 sm:py-2 h-full">
-                    <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 line-clamp-1">Events</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="eventSection" className="flex flex-col items-center justify-center py-1 sm:py-2 h-full">
-                    <CalendarDays className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 line-clamp-1">Upcoming</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="awards" className="flex flex-col items-center justify-center py-1 sm:py-2 h-full">
-                    <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 line-clamp-1">Awards</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="members" className="flex flex-col items-center justify-center py-1 sm:py-2 h-full">
-                    <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                    <span className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 line-clamp-1">Members</span>
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+              {/* Simple navigation buttons for mobile instead of tabs to avoid conflicts */}
+              <div className="grid grid-cols-5 gap-1 mt-3 sm:mt-4">
+                <button
+                  onClick={() => onTabChange("dashboard")}
+                  className={`flex flex-col items-center justify-center py-2 rounded-lg ${
+                    activeTab === "dashboard" 
+                      ? "bg-blue-50 text-blue-700" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <LayoutDashboard className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-[10px] sm:text-xs mt-1">Dashboard</span>
+                </button>
+                <button
+                  onClick={() => onTabChange("events")}
+                  className={`flex flex-col items-center justify-center py-2 rounded-lg ${
+                    activeTab === "events" 
+                      ? "bg-blue-50 text-blue-700" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-[10px] sm:text-xs mt-1">Events</span>
+                </button>
+                <button
+                  onClick={() => onTabChange("upcoming")}
+                  className={`flex flex-col items-center justify-center py-2 rounded-lg ${
+                    activeTab === "upcoming" 
+                      ? "bg-blue-50 text-blue-700" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-[10px] sm:text-xs mt-1">Upcoming</span>
+                </button>
+                <button
+                  onClick={() => onTabChange("awards")}
+                  className={`flex flex-col items-center justify-center py-2 rounded-lg ${
+                    activeTab === "awards" 
+                      ? "bg-blue-50 text-blue-700" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <Award className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-[10px] sm:text-xs mt-1">Achieve</span>
+                </button>
+                <button
+                  onClick={() => onTabChange("members")}
+                  className={`flex flex-col items-center justify-center py-2 rounded-lg ${
+                    activeTab === "members" 
+                      ? "bg-blue-50 text-blue-700" 
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <Users className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-[10px] sm:text-xs mt-1">Members</span>
+                </button>
+              </div>
             </div>
           </div>
 

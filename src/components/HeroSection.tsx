@@ -75,6 +75,7 @@ export default function HeroSection() {
         </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
         {/* Subline shimmer */}
@@ -99,6 +100,12 @@ export default function HeroSection() {
           </span>
         </div>
 >>>>>>> upstream/master
+=======
+        {/* Subtitle */}
+        <p className="reveal fade-up delay-4 text-white text-lg md:text-xl max-w-3xl mx-auto mb-12 opacity-90">
+          Empowering innovation, fostering collaboration, and shaping the future of technology
+        </p>
+>>>>>>> dbc334a (fix)
       </div>
 
       {/* Scroll Down Indicator */}

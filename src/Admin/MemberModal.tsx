@@ -18,13 +18,14 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
   const [memberName, setMemberName] = useState("");
   const [memberDesignation, setMemberDesignation] = useState("");
   const [memberDepartment, setMemberDepartment] = useState("");
-  const [memberPosition, setMemberPosition] = useState("");
   const [memberEducation, setMemberEducation] = useState("");
   const [memberLinkedin, setMemberLinkedin] = useState("");
   const [memberCommittee, setMemberCommittee] = useState("");
   const [memberSociety, setMemberSociety] = useState("");
   const [memberCorePosition, setMemberCorePosition] = useState("");
   const [memberExecutivePosition, setMemberExecutivePosition] = useState("");
+  const [memberYear, setMemberYear] = useState("");
+  const [memberDisplayOrder, setMemberDisplayOrder] = useState("");
 
   useEffect(() => {
     if (member) {
@@ -33,13 +34,20 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
       setMemberName(member.name || "");
       setMemberDesignation(member.designation || "");
       setMemberDepartment(member.department || "");
-      setMemberPosition(member.position || "");
       setMemberEducation(member.education || "");
       setMemberLinkedin(member.linkedin || "");
       setMemberCommittee(member.committee || "");
       setMemberSociety(member.society || "");
-      setMemberCorePosition(member.corePosition || "");
-      setMemberExecutivePosition(member.executivePosition || "");
+
+      // FIX: Load display order when editing
+      setMemberDisplayOrder(member.displayOrder?.toString() || "");
+
+      if (member.type === "core") {
+        setMemberCorePosition(member.position || "");
+      } else if (member.type === "executive") {
+        setMemberExecutivePosition(member.position || "");
+        setMemberYear(member.year?.toString() || "");
+      }
     } else {
       resetMemberForm();
     }
@@ -51,13 +59,14 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
     setMemberName("");
     setMemberDesignation("");
     setMemberDepartment("");
-    setMemberPosition("");
     setMemberEducation("");
     setMemberLinkedin("");
     setMemberCommittee("");
     setMemberSociety("");
     setMemberCorePosition("");
     setMemberExecutivePosition("");
+    setMemberYear("");
+    setMemberDisplayOrder(""); // FIX
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -71,6 +80,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
         name: memberName,
         designation: memberDesignation,
         linkedin: memberLinkedin,
+        displayOrder: Number(memberDisplayOrder) || 999,
         updatedAt: serverTimestamp(),
         ...(member ? {} : { createdAt: serverTimestamp() }),
       };
@@ -83,6 +93,7 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
         if (memberType === "executive") {
           memberData.position = memberExecutivePosition;
           memberData.society = memberSociety;
+          memberData.year = Number(memberYear) || new Date().getFullYear();
         }
 
         if (memberType === "core") {
@@ -119,19 +130,16 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">{member ? "Edit" : "Add New"} Member</h3>
-            <button className="text-gray-600 hover:text-gray-800" onClick={onClose}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
+            <button className="text-gray-600 hover:text-gray-800" onClick={onClose}>✕</button>
           </div>
 
           <form onSubmit={handleSubmit}>
+
             {/* Member Type */}
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">Member Type</label>
               <select
-                className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 bg-white"
+                className="w-full border-gray-300 rounded-md px-4 py-2"
                 value={memberType}
                 onChange={(e) => setMemberType(e.target.value)}
                 required
@@ -146,25 +154,32 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
 
             <ImageUrlInput value={memberImage} onChange={setMemberImage} label="Image URL" placeholder="https://example.com/image.jpg" />
 
-            {/* Basic Fields */}
             <Input label="Name" value={memberName} onChange={setMemberName} placeholder="John Doe" required />
             <Input label="Designation" value={memberDesignation} onChange={setMemberDesignation} placeholder="Professor" required />
             <Input label="LinkedIn Profile URL" value={memberLinkedin} onChange={setMemberLinkedin} placeholder="https://linkedin.com/in/johndoe" />
 
-            {/* Faculty-specific field */}
+            {/* Display Order */}
+            <Input
+              label="Display Order"
+              type="number"
+              value={memberDisplayOrder}
+              onChange={setMemberDisplayOrder}
+              placeholder="1"
+              required
+            />
+
             {memberType === "faculty" && (
               <Input label="Department" value={memberDepartment} onChange={setMemberDepartment} placeholder="Computer Science" required />
             )}
 
-            {/* Executive-specific dropdowns */}
             {memberType === "executive" && (
               <>
-                <Dropdown label="Society/Chapter/Group" value={memberSociety} onChange={setMemberSociety} options={["SB", "WIE", "SIGHT", "SPS", "CS"]} />
+                <Dropdown label="Society" value={memberSociety} onChange={setMemberSociety} options={["SB", "WIE", "SIGHT", "SPS", "CS"]} />
                 <Dropdown label="Position" value={memberExecutivePosition} onChange={setMemberExecutivePosition} options={executiveRoles} />
+                <Input label="Year" value={memberYear} onChange={setMemberYear} placeholder="2024" required />
               </>
             )}
 
-            {/* Core-specific dropdowns */}
             {memberType === "core" && (
               <>
                 <Dropdown label="Committee" value={memberCommittee} onChange={setMemberCommittee} options={["Management Committee", "Curation Committee", "Content Committee", "Creative Committee", "Outreach Committee", "Technical Committee"]} />
@@ -172,19 +187,19 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
               </>
             )}
 
-            {/* Non-faculty education */}
             {memberType !== "faculty" && (
               <Input label="Education" value={memberEducation} onChange={setMemberEducation} placeholder="Ph.D. in Computer Science" required />
             )}
 
             <div className="flex justify-end space-x-3 mt-6">
-              <button type="button" className="px-4 py-2 border border-gray-300 rounded-md" onClick={onClose}>
+              <button type="button" className="px-4 py-2 border rounded-md" onClick={onClose}>
                 Cancel
               </button>
               <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md" disabled={loading}>
                 {loading ? "Saving..." : member ? "Update Member" : "Save Member"}
               </button>
             </div>
+
           </form>
         </div>
       </div>
@@ -192,13 +207,12 @@ const MemberModal: React.FC<MemberModalProps> = ({ isOpen, onClose, member, setS
   );
 };
 
-// Reusable input component
-const Input = ({ label, value, onChange, placeholder, required = false }: any) => (
+const Input = ({ label, value, onChange, placeholder, required = false, type = "text" }: any) => (
   <div className="mb-4">
     <label className="block text-gray-700 font-medium mb-2">{label}</label>
     <input
-      type="text"
-      className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+      type={type}
+      className="w-full border-gray-300 rounded-md px-4 py-2"
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
@@ -207,12 +221,11 @@ const Input = ({ label, value, onChange, placeholder, required = false }: any) =
   </div>
 );
 
-// Reusable dropdown component
 const Dropdown = ({ label, value, onChange, options }: any) => (
   <div className="mb-4">
     <label className="block text-gray-700 font-medium mb-2">{label}</label>
     <select
-      className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 bg-white"
+      className="w-full border-gray-300 rounded-md px-4 py-2"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       required

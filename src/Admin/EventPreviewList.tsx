@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import {
   collection,
@@ -10,6 +9,7 @@ import {
   onSnapshot,
   where
 } from "firebase/firestore";
+import { Button } from "@/components/ui/button";
 
 interface EventPreviewListProps {
   onEdit: (event: any) => void;
@@ -24,24 +24,25 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
   setSuccess,
   setError
 }) => {
-  const navigate = useNavigate();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [eventsPerPage] = useState<number>(8);
+  const [selectedYear, setSelectedYear] = useState<string>('all');
   const [viewMode, setViewMode] = useState<string>("all"); // "all", "upcoming", "past"
+  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   // Use Firestore real-time updates
   useEffect(() => {
     setLoading(true);
     try {
       const eventsQuery = query(
-        collection(db, "events"),
-        orderBy("createdAt", "desc")
+        collection(db, "events")
       );
-      
+
       // Set up real-time listener
       const unsubscribe = onSnapshot(
         eventsQuery,
@@ -49,7 +50,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           const eventsList = querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          }));
+          })).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
           setEvents(eventsList);
           setLoading(false);
           console.log("Fetched events:", eventsList.length);
@@ -64,7 +65,7 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           setLoading(false);
         }
       );
-      
+
       // Clean up the listener when component unmounts
       return () => unsubscribe();
     } catch (err: any) {
@@ -93,17 +94,38 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
     return event.name || event.title || "Unnamed Event";
   };
 
-  // Filter events based on view mode and search query
+  // Helper: get the year an event belongs to (stored year field or parsed from date)
+  const getEventYear = (e: any): number => {
+    if (e.year) return Number(e.year);
+    if (e.date) {
+      const parsed = Number(e.date.substring(0, 4));
+      if (!isNaN(parsed) && parsed > 2000) return parsed;
+    }
+    return new Date().getFullYear();
+  };
+
+  // Get available years from events (auto-derived, sorted descending)
+  const availableYears = Array.from(
+    new Set(events.map(e => getEventYear(e)))
+  ).sort((a, b) => b - a);
+
+  // Filter events based on view mode, year, and search query
   const filteredEvents = events.filter((event) => {
-    // First apply view mode filter
+    // Apply year filter using the derived year
+    if (selectedYear !== 'all') {
+      const eventYear = getEventYear(event);
+      if (eventYear !== parseInt(selectedYear)) return false;
+    }
+
+    // Apply view mode filter
     if (viewMode === "upcoming" && !event.isUpcoming) {
       return false;
     }
     if (viewMode === "past" && event.isUpcoming) {
       return false;
     }
-    
-    // Then apply search query filter
+
+    // Apply search query filter
     return (
       getEventName(event).toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -147,36 +169,60 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           <div className="flex flex-wrap gap-2 mb-3 sm:mb-0 w-full sm:w-auto justify-center sm:justify-start">
             <button
               onClick={() => setViewMode("all")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "all"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "all"
                   ? "bg-blue-100 text-blue-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               All Events
             </button>
             <button
               onClick={() => setViewMode("upcoming")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "upcoming"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "upcoming"
                   ? "bg-green-100 text-green-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Upcoming
             </button>
             <button
               onClick={() => setViewMode("past")}
-              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
-                viewMode === "past"
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${viewMode === "past"
                   ? "bg-gray-200 text-gray-700 font-medium"
                   : "bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Regular
             </button>
           </div>
-          
+
+          {/* Year Tabs */}
+          <div className="flex flex-wrap gap-1 sm:gap-2 w-full sm:w-auto justify-center sm:justify-end">
+            <button
+              onClick={() => setSelectedYear('all')}
+              className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
+                selectedYear === 'all'
+                  ? "bg-purple-100 text-purple-700 font-medium"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              All Years
+            </button>
+            {availableYears.map((year) => (
+              <button
+                key={year}
+                onClick={() => setSelectedYear(year.toString())}
+                className={`px-2 py-1 text-xs sm:text-sm rounded-md ${
+                  selectedYear === year.toString()
+                    ? "bg-blue-100 text-blue-700 font-medium"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+
           <div className="w-full sm:w-64">
             <input
               type="text"
@@ -199,8 +245,8 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
       {/* No Events Found */}
       {!loading && filteredEvents.length === 0 && (
         <div className="p-4 sm:p-8 text-center text-gray-500 text-sm sm:text-base">
-          {viewMode !== "all" 
-            ? `No ${viewMode} events found. Change the filter or add new events.` 
+          {viewMode !== "all"
+            ? `No ${viewMode} events found. Change the filter or add new events.`
             : "No events found. Add a new event to get started."}
         </div>
       )}
@@ -391,7 +437,85 @@ const EventPreviewList: React.FC<EventPreviewListProps> = ({
           </button>
         </div>
       )}
-      
+
+      {/* Event Details Modal */}
+      {isModalOpen && selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    {getEventName(selectedEvent)}
+                  </h2>
+                  {selectedEvent.isUpcoming && (
+                    <span className="inline-block bg-green-100 text-green-700 px-2 py-1 text-sm font-medium rounded-md mb-2">
+                      Upcoming
+                    </span>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    {selectedEvent.date && (
+                      <div>
+                        <span className="font-medium">Date:</span> {formatDate(selectedEvent.date)}
+                      </div>
+                    )}
+                    {selectedEvent.time && (
+                      <div>
+                        <span className="font-medium">Time:</span> {selectedEvent.time}
+                      </div>
+                    )}
+                    {selectedEvent.venue && (
+                      <div>
+                        <span className="font-medium">Venue:</span> {selectedEvent.venue}
+                      </div>
+                    )}
+                    {selectedEvent.speakers && (
+                      <div>
+                        <span className="font-medium">Speakers:</span> {selectedEvent.speakers}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {selectedEvent.image && (
+                <div className="mb-4">
+                  <img
+                    src={selectedEvent.image}
+                    alt={getEventName(selectedEvent)}
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+              
+              {selectedEvent.description && (
+                <div className="mb-4">
+                  <h3 className="font-semibold text-gray-800 mb-2">Description</h3>
+                  <p className="text-gray-600">{selectedEvent.description}</p>
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    onEdit(selectedEvent);
+                    setIsModalOpen(false);
+                  }}
+                >
+                  Edit Event
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Event count */}
       {!loading && filteredEvents.length > 0 && (
         <div className="px-3 sm:px-6 py-2 sm:py-3 bg-gray-50 border-t text-xs sm:text-sm text-gray-500">

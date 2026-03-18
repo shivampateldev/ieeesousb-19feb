@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import AwardModal from "../Admin/AwardModal";
-import AwardPreviewList from "../Admin/AwardPreviewList"; // Check if this should be AwardsPreviewList
+import AwardPreviewList from "../Admin/AwardPreviewList";
 import EventModal from "../Admin/EventModal";
 import EventPreviewList from "../Admin/EventPreviewList";
 import MemberModal from "../Admin/MemberModal";
 import MemberPreviewList from "../Admin/MemberPreviewList";
+import JourneyModal from "../Admin/JourneyModal";
+import JourneyPreviewList from "../Admin/JourneyPreviewList";
 import Dashboard from "../Admin/Dashboard";
 import AdminLayout from "../Admin/AdminLayout";
-import { db } from "../firebase";
-import { doc, deleteDoc } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import { doc, deleteDoc, collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -26,7 +28,6 @@ const Admin = () => {
 
   // Navigation handler from dashboard to specific tabs
   const handleNavigate = (section: string) => {
-    console.log(`Navigating to section: ${section}`); // Debug log
     switch (section) {
       case 'events':
         setActiveTab('events');
@@ -37,8 +38,11 @@ const Admin = () => {
       case 'members':
         setActiveTab('members');
         break;
+      case 'journey':
+        setActiveTab('journey');
+        break;
       case 'addEvent':
-        setSelectedEvent(null); // Clear any previous event
+        setSelectedEvent(null);
         setShowEventModal(true);
         setActiveTab('events');
         break;
@@ -52,18 +56,6 @@ const Admin = () => {
         setShowMemberModal(true);
         setActiveTab('members');
         break;
-      case 'eventDetails':
-        // If you decide to implement event details view
-        setActiveTab('events');
-        break;
-      case 'awardDetails':
-        // If you decide to implement award details view
-        setActiveTab('awards');
-        break;
-      case 'memberDetails':
-        // If you decide to implement member details view
-        setActiveTab('members');
-        break;
       default:
         setActiveTab('dashboard');
     }
@@ -71,65 +63,65 @@ const Admin = () => {
 
   // Edit Handlers
   const handleEditEvent = (event: any) => {
-    console.log("Editing event:", event.id);
     setSelectedEvent(event);
     setShowEventModal(true);
   };
   
   const handleEditAward = (award: any) => {
-    console.log("Editing award:", award.id);
     setSelectedAward(award);
     setShowAwardModal(true);
   };
-
+  
   const handleEditMember = (member: any) => {
-    console.log("Editing member:", member.id);
     setSelectedMember(member);
     setShowMemberModal(true);
   };
 
+  // TASK 17: Log admin activity to Firestore (non-blocking)
+  const logActivity = async (action: string, contentType: string, contentId: string, contentName: string) => {
+    try {
+      const user = auth.currentUser;
+      await addDoc(collection(db, "adminActivityLogs"), {
+        action,
+        contentType,
+        contentId,
+        contentName,
+        adminEmail: user?.email || "unknown",
+        timestamp: serverTimestamp(),
+      });
+    } catch (_) {}
+  };
+
   // Delete Handlers
   const handleDeleteEvent = async (id: string) => {
-    if (!navigator.onLine) {
-      setErrorMessage("No internet connection.");
-      return;
-    }
+    if (!navigator.onLine) { setErrorMessage("No internet connection."); return; }
     try {
-      console.log("Deleting event:", id);
       await deleteDoc(doc(db, "events", id));
+      await logActivity("deleted", "event", id, id);
       setSuccessMessage("Event deleted successfully.");
     } catch (err: any) {
-      console.error("Delete event error:", err);
       setErrorMessage(`Error deleting event: ${err.message}`);
     }
   };
-  
+
   const handleDeleteAward = async (id: string) => {
-    if (!navigator.onLine) {
-      setErrorMessage("No internet connection.");
-      return;
-    }
+    if (!navigator.onLine) { setErrorMessage("No internet connection."); return; }
     try {
-      console.log("Deleting award:", id);
       await deleteDoc(doc(db, "awards", id));
-      setSuccessMessage("Award deleted successfully.");
+      await logActivity("deleted", "award", id, id);
+      setSuccessMessage("Achievement deleted successfully.");
     } catch (err: any) {
-      console.error("Delete award error:", err);
-      setErrorMessage(`Error deleting award: ${err.message}`);
+      setErrorMessage(`Error deleting achievement: ${err.message}`);
     }
   };
 
   const handleDeleteMember = async (id: string) => {
-    if (!navigator.onLine) {
-      setErrorMessage("No internet connection.");
-      return;
-    }
+    if (!navigator.onLine) { setErrorMessage("No internet connection."); return; }
     try {
-      console.log("Deleting member:", id);
       await deleteDoc(doc(db, "members", id));
+      await logActivity("deleted", "member", id, id);
       setSuccessMessage("Member deleted successfully.");
     } catch (err: any) {
-      console.error("Delete member error:", err);
       setErrorMessage(`Error deleting member: ${err.message}`);
     }
   };
@@ -147,7 +139,6 @@ const Admin = () => {
 
   return (
     <AdminLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {/* Notification alerts */}
       {successMessage && (
         <Alert className="mb-4 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
           <AlertDescription>{successMessage}</AlertDescription>
@@ -159,80 +150,103 @@ const Admin = () => {
         </Alert>
       )}
 
-      <Tabs value={activeTab} className="space-y-6">
-        {/* Dashboard Tab */}
-        <TabsContent value="dashboard" className="m-0">
-          <Dashboard 
+      {/* Simple conditional rendering instead of Tabs to avoid conflicts */}
+      {activeTab === 'dashboard' && (
+        <div className="space-y-6">
+          <Dashboard
             navigateTo={handleNavigate}
             setSelectedEvent={setSelectedEvent}
             setSelectedAward={setSelectedAward}
             setSelectedMember={setSelectedMember}
           />
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Events Tab */}
-        <TabsContent value="events" className="space-y-6 m-0">
+      {activeTab === 'events' && (
+        <div className="space-y-6">
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">Events Management</h2>
-            <Button 
-              onClick={() => {
-                setSelectedEvent(null);
-                setShowEventModal(true);
-              }}
-            >
+            <Button onClick={() => {
+              setSelectedEvent(null);
+              setShowEventModal(true);
+            }}>
               Add New Event
             </Button>
           </div>
-          <EventPreviewList 
-            onEdit={handleEditEvent} 
-            onDelete={handleDeleteEvent} 
-            setSuccess={setSuccessMessage} 
+          <EventPreviewList
+            onEdit={handleEditEvent}
+            onDelete={handleDeleteEvent}
+            setSuccess={setSuccessMessage}
             setError={setErrorMessage}
           />
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Awards Tab */}
-        <TabsContent value="awards" className="space-y-6 m-0">
+      {activeTab === 'upcoming' && (
+        <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Awards Management</h2>
-            <Button 
-              onClick={() => {
-                setSelectedAward(null);
-                setShowAwardModal(true);
-              }}
-            >
-              Add New Award
+            <h2 className="text-2xl font-bold">Upcoming Events</h2>
+            <Button onClick={() => {
+              setSelectedEvent(null);
+              setShowEventModal(true);
+            }}>
+              Add New Event
             </Button>
           </div>
-          <AwardPreviewList 
-            onEdit={handleEditAward} 
-            onDelete={handleDeleteAward} 
-            setSuccess={setSuccessMessage} 
+          <EventPreviewList
+            onEdit={handleEditEvent}
+            onDelete={handleDeleteEvent}
+            setSuccess={setSuccessMessage}
             setError={setErrorMessage}
           />
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Members Tab */}
-        <TabsContent value="members" className="space-y-6 m-0">
+      {activeTab === 'awards' && (
+        <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Members Management</h2>
-            <Button 
-              onClick={() => {
-                setSelectedMember(null);
-                setShowMemberModal(true);
-              }}
-            >
-              Add New Member
+            <h2 className="text-2xl font-bold">Achievements Management</h2>
+            <Button onClick={() => {
+              setSelectedAward(null);
+              setShowAwardModal(true);
+            }}>
+              Add New Achievement
             </Button>
           </div>
-          <MemberPreviewList 
-            onEdit={handleEditMember} 
-            onDelete={handleDeleteMember} 
-            setSuccess={setSuccessMessage} 
+          <AwardPreviewList
+            onEdit={handleEditAward}
+            onDelete={handleDeleteAward}
+            setSuccess={setSuccessMessage}
             setError={setErrorMessage}
           />
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
+
+      {activeTab === 'members' && (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Team Management</h2>
+            <Button onClick={() => {
+              setSelectedMember(null);
+              setShowMemberModal(true);
+            }}>
+              Add New Team Member
+            </Button>
+          </div>
+          <MemberPreviewList
+            onEdit={handleEditMember}
+            onDelete={handleDeleteMember}
+            setSuccess={setSuccessMessage}
+            setError={setErrorMessage}
+          />
+        </div>
+      )}
+
+      {activeTab === 'journey' && (
+        <div className="space-y-6">
+          <JourneyPreviewList />
+        </div>
+      )}
 
       {/* Modals */}
       {showEventModal && (

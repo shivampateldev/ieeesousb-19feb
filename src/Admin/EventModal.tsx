@@ -6,7 +6,7 @@ import ImageUrlInput from "./ImageUrlInput";
 interface EventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  event?: any; // Optional event for editing
+  event?: any;
   setSuccess: (message: string) => void;
   setError: (message: string) => void;
 }
@@ -19,8 +19,10 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
   const [eventDescription, setEventDescription] = useState<string>("");
   const [eventSpeakers, setEventSpeakers] = useState<string>("");
   const [eventImage, setEventImage] = useState<string>("");
+  const [eventVenue, setEventVenue] = useState<string>("");
+  const [eventCategory, setEventCategory] = useState<string>("Technical Event");
+  const [eventYear, setEventYear] = useState<number>(new Date().getFullYear());
 
-  // Initialize form with event data if editing
   useEffect(() => {
     if (event) {
       setEventName(event.name || "");
@@ -29,12 +31,14 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
       setEventDescription(event.description || "");
       setEventSpeakers(event.speakers || "");
       setEventImage(event.image || "");
+      setEventVenue(event.venue || "");
+      setEventCategory(event.category || "Technical Event");
+      setEventYear(event.year || new Date().getFullYear());
     } else {
       resetEventForm();
     }
   }, [event]);
 
-  // Reset form states
   const resetEventForm = () => {
     setEventName("");
     setEventDate("");
@@ -42,14 +46,19 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
     setEventDescription("");
     setEventSpeakers("");
     setEventImage("");
+    setEventVenue("");
+    setEventCategory("Technical Event");
+    setEventYear(new Date().getFullYear());
   };
 
-  // Handle form submissions (Add or Update event)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
+      // Derive year from date if not provided
+      const yearFromDate = eventDate ? new Date(eventDate).getFullYear() : eventYear;
+
       const eventData = {
         name: eventName,
         date: eventDate,
@@ -57,20 +66,21 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
         description: eventDescription,
         speakers: eventSpeakers,
         image: eventImage,
+        venue: eventVenue,
+        category: eventCategory,
+        year: yearFromDate,
         ...(event ? {} : { createdAt: serverTimestamp() }),
         updatedAt: serverTimestamp(),
       };
 
       if (event?.id) {
-        // Update existing event
         await updateDoc(doc(db, "events", event.id), eventData);
         setSuccess("Event updated successfully!");
       } else {
-        // Add new event
         await addDoc(collection(db, "events"), eventData);
         setSuccess("Event added successfully!");
       }
-      
+
       resetEventForm();
       onClose();
     } catch (err: any) {
@@ -88,39 +98,52 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold">{event ? 'Edit' : 'Add New'} Event</h3>
-            <button 
-              className="text-gray-600 hover:text-gray-800"
-              onClick={onClose}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+            <button className="text-gray-600 hover:text-gray-800" onClick={onClose}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          
+
           <form onSubmit={handleSubmit}>
             {/* Event Name */}
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">Event Name</label>
               <input
                 type="text"
-                className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Annual Tech Conference"
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
                 required
               />
             </div>
-            
-            {/* Event Date and Time */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
+
+            {/* Category — TASK 16 */}
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Event Category</label>
+              <select
+                className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                value={eventCategory}
+                onChange={(e) => setEventCategory(e.target.value)}
+              >
+                <option value="Technical Event">Technical Event</option>
+                <option value="Non Technical Event">Non Technical Event</option>
+              </select>
+            </div>
+
+            {/* Date, Time, Year */}
+            <div className="grid grid-cols-3 gap-4 mb-4">
               <div>
                 <label className="block text-gray-700 font-medium mb-2">Date</label>
                 <input
                   type="date"
-                  className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                   value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
+                  onChange={(e) => {
+                    setEventDate(e.target.value);
+                    if (e.target.value) setEventYear(new Date(e.target.value).getFullYear());
+                  }}
                   required
                 />
               </div>
@@ -128,48 +151,69 @@ const EventModal: React.FC<EventModalProps> = ({ isOpen, onClose, event, setSucc
                 <label className="block text-gray-700 font-medium mb-2">Time</label>
                 <input
                   type="time"
-                  className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                   value={eventTime}
                   onChange={(e) => setEventTime(e.target.value)}
-                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">Year</label>
+                <input
+                  type="number"
+                  className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={eventYear}
+                  onChange={(e) => setEventYear(parseInt(e.target.value))}
+                  min={2020}
+                  max={2030}
                 />
               </div>
             </div>
-            
-            {/* Event Image URL */}
-            <ImageUrlInput 
+
+            {/* Venue */}
+            <div className="mb-4">
+              <label className="block text-gray-700 font-medium mb-2">Venue</label>
+              <input
+                type="text"
+                className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Main Auditorium, Silver Oak University"
+                value={eventVenue}
+                onChange={(e) => setEventVenue(e.target.value)}
+              />
+            </div>
+
+            {/* Image */}
+            <ImageUrlInput
               value={eventImage}
               onChange={setEventImage}
               label="Event Image URL"
               placeholder="https://example.com/event-image.jpg"
             />
-            
-            {/* Event Description */}
+
+            {/* Description */}
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">Description</label>
               <textarea
-                className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500 h-32"
+                className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500 h-32"
                 placeholder="Event description..."
                 value={eventDescription}
                 onChange={(e) => setEventDescription(e.target.value)}
                 required
-              ></textarea>
+              />
             </div>
-            
-            {/* Event Speakers */}
+
+            {/* Speakers */}
             <div className="mb-4">
               <label className="block text-gray-700 font-medium mb-2">Speakers</label>
               <input
                 type="text"
-                className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 rounded-md shadow-sm px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Dr. Jane Smith, Prof. John Doe"
                 value={eventSpeakers}
                 onChange={(e) => setEventSpeakers(e.target.value)}
-                required
               />
               <p className="text-gray-500 text-sm mt-1">Separate multiple speakers with commas</p>
             </div>
-            
+
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 mt-6">
               <button

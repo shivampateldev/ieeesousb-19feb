@@ -124,7 +124,7 @@
   }
 
   .animate-on-load.animated {
-    animation: fadeIn 0.5s ease forwards;
+    animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 }
 
@@ -188,55 +188,55 @@ img {
   opacity: 0;
   will-change: opacity, transform, filter;
   transition:
-    opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.75s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity 1s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 1s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Directional variants ── */
 .reveal.fade-up {
-  transform: translateY(70px) scale(0.96);
-  filter: blur(4px);
+  transform: translateY(40px) scale(0.98);
+  filter: blur(2px);
 }
 
 .reveal.fade-down {
-  transform: translateY(-70px) scale(0.96);
-  filter: blur(4px);
+  transform: translateY(-40px) scale(0.98);
+  filter: blur(2px);
 }
 
 .reveal.fade-left {
-  transform: translateX(-80px) rotate(-2deg) scale(0.95);
-  filter: blur(5px);
+  transform: translateX(-50px) scale(0.97);
+  filter: blur(2px);
 }
 
 .reveal.fade-right {
-  transform: translateX(80px) rotate(2deg) scale(0.95);
-  filter: blur(5px);
+  transform: translateX(50px) scale(0.97);
+  filter: blur(2px);
 }
 
 .reveal.scale-in {
-  transform: scale(0.7) rotate(-3deg);
-  filter: blur(8px);
+  transform: scale(0.85);
+  filter: blur(3px);
 }
 
 .reveal.zoom-fade {
-  transform: scale(0.82) translateY(30px);
-  filter: blur(6px);
+  transform: scale(0.9) translateY(20px);
+  filter: blur(2px);
 }
 
 .reveal.flip-up {
-  transform: perspective(600px) rotateX(25deg) translateY(50px);
-  filter: blur(4px);
+  transform: perspective(600px) rotateX(12deg) translateY(30px);
+  filter: blur(2px);
 }
 
 .reveal.slide-hard {
-  transform: translateX(-120px);
-  filter: blur(6px);
+  transform: translateX(-70px);
+  filter: blur(3px);
 }
 
 .reveal.pop {
-  transform: scale(0.6);
-  filter: blur(10px);
+  transform: scale(0.85);
+  filter: blur(3px);
 }
 
 /* ── Clip-path reveal (text split effect) ── */
@@ -246,8 +246,8 @@ img {
   /* keep opacity at 1; clipping hides it */
   transform: translateY(20px);
   transition:
-    clip-path 0.65s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    clip-path 0.9s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.9s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Visible state — everything resets ── */
@@ -263,43 +263,43 @@ img {
 
 /* ── Stagger delays ── */
 .delay-1 {
-  transition-delay: 0.06s;
+  transition-delay: 0.08s;
 }
 
 .delay-2 {
-  transition-delay: 0.14s;
+  transition-delay: 0.18s;
 }
 
 .delay-3 {
-  transition-delay: 0.22s;
+  transition-delay: 0.30s;
 }
 
 .delay-4 {
-  transition-delay: 0.32s;
+  transition-delay: 0.44s;
 }
 
 .delay-5 {
-  transition-delay: 0.42s;
+  transition-delay: 0.58s;
 }
 
 .delay-6 {
-  transition-delay: 0.54s;
+  transition-delay: 0.74s;
 }
 
 /* ── Pop bounce keyframe (used on counter cards) ── */
 @keyframes popBounce {
   0% {
-    transform: scale(0.6);
+    transform: scale(0.85);
     opacity: 0;
   }
 
-  55% {
-    transform: scale(1.08);
+  60% {
+    transform: scale(1.02);
     opacity: 1;
   }
 
-  75% {
-    transform: scale(0.96);
+  80% {
+    transform: scale(0.99);
   }
 
   100% {
@@ -309,7 +309,7 @@ img {
 }
 
 .reveal.pop.visible {
-  animation: popBounce 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  animation: popBounce 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   opacity: 1;
   transform: none;
   filter: none;
@@ -338,8 +338,12 @@ img {
 }
 
 .heading-line.visible {
+<<<<<<< HEAD
   animation: shimmerLine 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
 <<<<<<< HEAD
+=======
+  animation: shimmerLine 1s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+>>>>>>> dbc334a (fix)
 }
 
 /* ══════════════════════════════════════

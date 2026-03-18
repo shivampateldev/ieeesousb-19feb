@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { db } from "../firebase";
 import {
   collection,
@@ -10,6 +9,7 @@ import {
   onSnapshot,
   where
 } from "firebase/firestore";
+import { Button } from "@/components/ui/button";
 
 interface AwardsPreviewListProps {
   onEdit: (award: any) => void;
@@ -18,19 +18,36 @@ interface AwardsPreviewListProps {
   setError: (message: string) => void;
 }
 
-const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
+const AwardPreviewList: React.FC<AwardsPreviewListProps> = ({
   onEdit,
   onDelete,
   setSuccess,
   setError
 }) => {
-  const navigate = useNavigate();
   const [awards, setAwards] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [awardsPerPage] = useState<number>(8);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [newsletterSubType, setNewsletterSubType] = useState<string>('all');
+  const [selectedAward, setSelectedAward] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  // Map of tab value → display label (matching the `type` field saved by AwardModal)
+  const CATEGORY_TABS = [
+    { value: 'all',        label: 'All Achievements' },
+    { value: 'branch',     label: 'Branch Achievement' },
+    { value: 'student',    label: 'Student Achievement' },
+    { value: 'newsletter', label: '📰 Newsletter' },
+  ];
+
+  const NEWSLETTER_SUB_TABS = [
+    { value: 'all',           label: 'All Newsletters' },
+    { value: 'divya_bhaskar', label: 'Divya Bhaskar' },
+    { value: 'general',       label: 'General' },
+  ];
 
   // Use Firestore real-time updates
   useEffect(() => {
@@ -38,9 +55,9 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
     try {
       const awardsQuery = query(
         collection(db, "awards"),
-        orderBy("createdAt", "desc")
+        orderBy("year", "desc")
       );
-      
+
       // Set up real-time listener
       const unsubscribe = onSnapshot(
         awardsQuery,
@@ -52,6 +69,10 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
           setAwards(awardsList);
           setLoading(false);
           console.log("Fetched awards:", awardsList.length);
+          // Debug: log the first award to check structure
+          if (awardsList.length > 0) {
+            console.log("First award data:", awardsList[0]);
+          }
         },
         (err) => {
           setError(`Error fetching awards: ${err.message}`);
@@ -59,7 +80,7 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
           setLoading(false);
         }
       );
-      
+
       // Clean up the listener when component unmounts
       return () => unsubscribe();
     } catch (err: any) {
@@ -84,12 +105,18 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
     onEdit(award);
   };
 
-  // Filter awards based on search query
-  const filteredAwards = awards.filter((award) =>
-    award.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    award.recipient?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    award.description?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter on award.type (the field saved by AwardModal), not award.category
+  const filteredAwards = awards.filter((award) => {
+    const matchesSearch =
+      award.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      award.recipient?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      award.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === 'all' || award.type === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   // Pagination
   const indexOfLastAward = currentPage * awardsPerPage;
@@ -99,12 +126,31 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-  
+
+      {/* Category Tabs */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex flex-wrap gap-2">
+          {CATEGORY_TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setSelectedCategory(tab.value)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === tab.value
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Search Bar */}
       <div className="p-4">
         <input
           type="text"
-          placeholder="Search Awards"
+          placeholder="Search Achievements"
           className="w-full px-4 py-2 rounded-lg border border-gray-300"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -268,6 +314,76 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
         </div>
       )}
 
+      {/* Award Details Modal */}
+      {isModalOpen && selectedAward && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-4">
+                <div className="flex-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    {selectedAward.title || "Unnamed Award"}
+                  </h2>
+                  {selectedAward.type && (
+                    <span className="inline-block bg-blue-100 text-blue-700 px-2 py-1 text-sm font-medium rounded-md mb-2">
+                      {selectedAward.type === 'branch' ? 'Branch Achievement' : 
+                       selectedAward.type === 'student' ? 'Student Achievement' : 
+                       selectedAward.type === 'newsletter' ? '📰 Newsletter' : 'Achievement'}
+                    </span>
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    {selectedAward.year && (
+                      <div>
+                        <span className="font-medium">Year:</span> {selectedAward.year}
+                      </div>
+                    )}
+                    {selectedAward.recipient && (
+                      <div>
+                        <span className="font-medium">Recipient:</span> {selectedAward.recipient}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {selectedAward.image && (
+                <div className="mb-4">
+                  <img
+                    src={selectedAward.image}
+                    alt={selectedAward.title}
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+              
+              {selectedAward.description && (
+                <div className="mb-4">
+                  <h3 className="font-semibold text-gray-800 mb-2">Description</h3>
+                  <p className="text-gray-600">{selectedAward.description}</p>
+                </div>
+              )}
+              
+              <div className="flex justify-end gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => {
+                    onEdit(selectedAward);
+                    setIsModalOpen(false);
+                  }}
+                >
+                  Edit Award
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Pagination */}
       {!loading && filteredAwards.length > awardsPerPage && (
         <div className="flex justify-center space-x-4 py-4">
@@ -291,4 +407,4 @@ const AwardsPreviewList: React.FC<AwardsPreviewListProps> = ({
   );
 };
 
-export default AwardsPreviewList;
+export default AwardPreviewList;

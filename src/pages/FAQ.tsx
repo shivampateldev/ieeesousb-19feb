@@ -1,9 +1,13 @@
 import Navbar from "@/components/Navbar";
 <<<<<<< HEAD
 import { ChevronRight } from "lucide-react";
+<<<<<<< HEAD
 =======
 import { HelpCircle, ChevronRight } from "lucide-react";
 >>>>>>> upstream/master
+=======
+import { TypingAnimation } from "@/components/TypingAnimation";
+>>>>>>> dbc334a (fix)
 
 export const metadata = {
     title: "FAQ - IEEE SOU SB",
@@ -103,7 +107,7 @@ export default function FAQ() {
                         </h1>
 
                         <p className="text-slate-500 dark:text-slate-400 text-base max-w-2xl">
-                            Find answers to common questions about IEEE, membership, benefits, and our student branch activities.
+                            <TypingAnimation text="Find answers to common questions about IEEE, membership, benefits, and our student branch activities." />
                         </p>
 
                         {/* Quick nav */}
@@ -148,7 +152,7 @@ export default function FAQ() {
                             {/* FAQ Answer */}
                             <div className="px-6 py-6">
                                 <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                    {faq.answer}
+                                    <TypingAnimation text={faq.answer} />
                                 </p>
                             </div>
                         </section>

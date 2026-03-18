@@ -2,6 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar, ChevronRight, ChevronLeft } from "lucide-react";
 import { journeyItems, type JourneyItem } from "@/data/journeyData";
+import { collection, getDocs, doc, getDoc, onSnapshot, query, orderBy } from "firebase/firestore";
+import { db } from "../../firebase";
+import App from "../../App.tsx";
+import "../../App.css";
 
 // Gradients removed to match main site theme
 
@@ -10,6 +14,8 @@ export default function JourneyDetails() {
   const [item, setItem] = useState<JourneyItem | null | undefined>(undefined);
   const [itemIndex, setItemIndex] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [allJourneyItems, setAllJourneyItems] = useState<JourneyItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Slideshow state
   const [slideIndex, setSlideIndex] = useState(0);
@@ -17,8 +23,47 @@ export default function JourneyDetails() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    const found = journeyItems.find((j) => j.id === id);
-    const idx = journeyItems.findIndex((j) => j.id === id);
+    const unsubscribe = onSnapshot(
+      query(collection(db, "journey"), orderBy("year", "desc")),
+      (snapshot) => {
+        const journeyData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as JourneyItem[];
+        
+        // Sort by year descending
+        const sortedJourney = journeyData.sort((a, b) => {
+          const yearA = parseInt(a.year || "0");
+          const yearB = parseInt(b.year || "0");
+          return yearB - yearA;
+        });
+        
+        setAllJourneyItems(sortedJourney);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching journey data:", error);
+        // Fallback to static data if Firebase fails
+        setAllJourneyItems(journeyItems);
+        setLoading(false);
+      }
+    );
+
+    // Return cleanup function to unsubscribe from listener
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    
+    console.log('JourneyDetails - id:', id);
+    console.log('JourneyDetails - allJourneyItems:', allJourneyItems);
+    
+    const found = allJourneyItems.find((j) => j.id === id);
+    const idx = allJourneyItems.findIndex((j) => j.id === id);
+    console.log('JourneyDetails - found:', found);
+    console.log('JourneyDetails - idx:', idx);
+    
     setItem(found ?? null);
     setItemIndex(idx >= 0 ? idx : 0);
     setSlideIndex(0);
@@ -27,7 +72,7 @@ export default function JourneyDetails() {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => setVisible(true));
     });
-  }, [id]);
+  }, [id, allJourneyItems, loading]);
 
   const slides = item
     ? [
@@ -62,6 +107,18 @@ export default function JourneyDetails() {
 
   const handlePrev = () => goTo((prev) => (prev - 1 + slides.length) % slides.length);
   const handleNext = () => goTo((prev) => (prev + 1) % slides.length);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-muted-foreground">Loading journey details...</span>
+        </div>
+      </div>
+    );
+  }
 
   // bg removed
   if (item === undefined) {

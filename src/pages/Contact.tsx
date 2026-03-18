@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import React, { useState, useEffect } from "react";
 >>>>>>> upstream/master
 import PageLayout from "@/components/PageLayout";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -124,7 +125,7 @@ export default function ContactUs() {
           <div className="mb-12 text-center pt-12">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">Contact Us</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Have a question or want to know more about our IEEE SOU SB? Reach out to us and we'll get back to you as soon as possible.
+              <TypingAnimation text={"Have a question or want to know more about our IEEE SOU SB? Reach out to us and we'll get back to you as soon as possible."} />
             </p>
           </div>
 

@@ -295,6 +295,10 @@ export default function IEEESOUSSBJRNYLoop() {
     role: Role,
     side: "left" | "right",
   ) => {
+    const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+      e.currentTarget.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2300629B;stop-opacity:1'/><stop offset='100%' style='stop-color:%23004d7a;stop-opacity:1'/></linearGradient></defs><rect width='800' height='600' fill='url(%23grad)'/><circle cx='400' cy='300' r='150' fill='rgba(255,255,255,0.1)'/><text x='400' y='300' font-family='Arial, sans-serif' font-size='48' font-weight='bold' text-anchor='middle' fill='rgba(255,255,255,0.8)' dy='-10'>IEEE</text><text x='400' y='300' font-family='Arial, sans-serif' font-size='24' text-anchor='middle' fill='rgba(255,255,255,0.6)' dy='30'>Image Not Available</text><rect x='50' y='50' width='700' height='500' fill='none' stroke='rgba(255,255,255,0.2)' stroke-width='2' rx='20'/></svg>";
+      e.currentTarget.alt = "Image not available";
+    };
     const isReset = fadePhase === "reset";
     const durationObj = isReset
       ? "duration-0"
@@ -388,6 +392,7 @@ export default function IEEESOUSSBJRNYLoop() {
               src={item.imageUrl}
               alt={item.title}
               className={`w-full h-full object-cover absolute inset-0 transition-all ${durationObj} ${imgBlur}`}
+              onError={handleImageError}
             />
             <div
               className={`absolute inset-0 z-10 transition-all ${durationObj} ${imgOverlay}`}

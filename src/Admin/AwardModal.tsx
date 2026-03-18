@@ -14,6 +14,7 @@ interface AwardModalProps {
 const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSuccess, setError }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [awardType, setAwardType] = useState<string>("branch");
+  const [newsletterType, setNewsletterType] = useState<string>("general");
   const [awardTitle, setAwardTitle] = useState<string>("");
   const [awardImage, setAwardImage] = useState<string>("");
   const [awardDescription, setAwardDescription] = useState<string>("");
@@ -24,6 +25,7 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
   useEffect(() => {
     if (award) {
       setAwardType(award.type || "branch");
+      setNewsletterType(award.newsletterType || "general");
       setAwardTitle(award.title || "");
       setAwardImage(award.image || "");
       setAwardDescription(award.description || "");
@@ -37,6 +39,7 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
   // Reset form states
   const resetAwardForm = () => {
     setAwardType("branch");
+    setNewsletterType("general");
     setAwardTitle("");
     setAwardImage("");
     setAwardDescription("");
@@ -50,7 +53,7 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
     setLoading(true);
     
     try {
-      const awardData = {
+      const awardData: any = {
         type: awardType,
         title: awardTitle,
         image: awardImage,
@@ -62,6 +65,9 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
 
       if (awardType === "student") {
         awardData.studentName = studentName;
+      }
+      if (awardType === "newsletter") {
+        awardData.newsletterType = newsletterType;
       }
 
       if (award?.id) {
@@ -110,8 +116,9 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
                 onChange={(e) => setAwardType(e.target.value)}
                 required
               >
-                <option value="branch">Branch Achievement</option>
+              <option value="branch">Branch Achievement</option>
                 <option value="student">Student Achievement</option>
+                <option value="newsletter">Newsletter</option>
               </select>
             </div>
             
@@ -138,6 +145,21 @@ const AwardModal: React.FC<AwardModalProps> = ({ isOpen, onClose, award, setSucc
                   onChange={(e) => setStudentName(e.target.value)}
                   required={awardType === "student"}
                 />
+              </div>
+            )}
+
+            {awardType === "newsletter" && (
+              <div className="mb-4">
+                <label className="block text-gray-700 font-medium mb-2">Newsletter Type</label>
+                <select
+                  className="w-full border-gray-300 rounded-md shadow-sm px-4 py-2 bg-white focus:ring-blue-500 focus:border-blue-500"
+                  value={newsletterType}
+                  onChange={(e) => setNewsletterType(e.target.value)}
+                  required
+                >
+                  <option value="divya_bhaskar">Divya Bhaskar</option>
+                  <option value="general">General</option>
+                </select>
               </div>
             )}
             

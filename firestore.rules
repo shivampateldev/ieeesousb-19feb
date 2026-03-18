@@ -1,34 +1,40 @@
+// Firestore Security Rules
+
 rules_version = '2';
-
 service cloud.firestore {
+  // Allow read access to public data (events, awards, members for display)
   match /databases/{database}/documents {
-
-    // Helper function to check if user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    // Events Collection
+    
+    // Public read access for frontend display
     match /events/{eventId} {
-      allow read: if true; // Public read access
-      allow write: if isAuthenticated(); // Only authenticated users (admins) can write
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
-
-    // Awards Collection
+    
     match /awards/{awardId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
-
-    // Members Collection
+    
     match /members/{memberId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
     }
-
-    // Default deny for everything else
-    match /{document=**} {
-      allow read, write: if false;
+    
+    match /journey/{journeyId} {
+      allow read: if true;
+      allow write: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // Admin-only collections
+    match /admin/{docId} {
+      allow read, write: if request.auth != null && isAdmin(request.auth.uid);
+    }
+    
+    // Utility functions
+    function isAdmin(uid) {
+      // Check if user is in the admins collection
+      return get(/databases/$(database)/documents/admins/$(uid)).data.role == 'admin';
     }
   }
 }

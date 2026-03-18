@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { db } from "@/firebase"; // Import Firebase configuration
 import { collection, query, where, getDocs } from "firebase/firestore";
 
@@ -21,6 +22,7 @@ export default function TeamMembers() {
       querySnapshot.forEach((doc) => {
         membersData.push(doc.data());
       });
+      membersData.sort((a, b) => a.name.localeCompare(b.name));
       setMembers(membersData);
     };
 
@@ -45,7 +47,9 @@ export default function TeamMembers() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold mb-2">Student Members</h1>
-            <p className="text-muted-foreground">Explore all IEEE SOU student members</p>
+            <p className="text-muted-foreground">
+              <TypingAnimation text={"Explore all IEEE SOU student members"} />
+            </p>
           </div>
 
           <div className="flex justify-center mb-8">

@@ -5,3 +5,7 @@ export const mailConfig = {
     pass: process.env.SMTP_PASS || "",
     to: process.env.MAIL_TO || "",
 };
+
+if (!mailConfig.user || !mailConfig.pass || !mailConfig.to) {
+  console.warn("⚠️  Warning: SMTP credentials or recipient email not configured in .env");
+}

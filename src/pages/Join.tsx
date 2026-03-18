@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import { useState, useEffect } from "react";
 >>>>>>> upstream/master
 import Navbar from "@/components/Navbar";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -151,7 +152,7 @@ export default function Join() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Join IEEE SOU SB</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Get access to cutting-edge information, networking opportunities, career enhancement, and other exclusive member benefits.
+              <TypingAnimation text={"Get access to cutting-edge information, networking opportunities, career enhancement, and other exclusive member benefits."} />
             </p>
           </div>
 

@@ -1,11 +1,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider } from "@/lib/theme-provider"; // Make sure this is a valid path
-import { TooltipProvider } from "@/components/ui/tooltip"; // Ensure these components are available
-import { Toaster } from "@/components/ui/toaster"; // Ensure these components are available
-import { Toaster as Sonner } from "@/components/ui/sonner"; // Ensure these components are available
+import { ThemeProvider } from "@/lib/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import InitialLoader from "@/components/InitialLoader";
+
 // Main Pages
 import Index from "./pages/Index";
 import Events from "./pages/Events";
@@ -20,10 +21,14 @@ import UpcomingEvents from "./pages/UpcomingEvents";
 import Contact from "./pages/Contact";
 import Join from "./pages/Join";
 import NotFound from "./pages/NotFound";
+<<<<<<< HEAD
 import Newsletter from "./pages/Newsletter"; 
 import StudentAchievements from "./pages/StudentAchievements";
 import BranchAwards from "./pages/BranchAwards";
 import UpcomingEvents from "./pages/UpcomingEvents";
+=======
+
+>>>>>>> dbc334a (fix)
 // About Pages
 import IEEE from "./pages/about/IEEE";
 import IEEESOUSSB from "./pages/about/IEEESOUSSB";
@@ -35,31 +40,54 @@ import IEEESOUSSIGHTSBG from "./pages/about/IEEESOUSSIGHTSBG";
 import IEEESOUSSBJRNY from "./pages/about/IEEESOUSSBJRNY";
 import IEEESOUSSBJRNYLoop from "./pages/about/IEEESOUSSBJRNYLoop";
 import JourneyDetails from "./pages/about/JourneyDetails";
+<<<<<<< HEAD
 =======
 >>>>>>> upstream/master
+=======
+
+>>>>>>> dbc334a (fix)
 // Team Pages
 import TeamFaculty from "./pages/team/TeamFaculty";
 import TeamAdvisory from "./pages/team/TeamAdvisory";
 import TeamExecutive from "./pages/team/TeamExecutive";
 import TeamCore from "./pages/team/TeamCore";
 import TeamMembers from "./pages/team/TeamMembers";
+
 // Admin + Auth
-import Admin from "./pages/Admin"; // ✅ Single Admin page with all functionality
+import Admin from "./pages/Admin";
 import Authentication from "./components/Authentication";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 // Details Pages
 import EventDetails from "./pages/EventDetails";
 import AwardDetails from "./pages/AwardDetails";
 import MemberDetails from "./pages/MemberDetails";
 import Bylaws from "./pages/Bylaws";
 import FAQ from "./pages/FAQ";
+<<<<<<< HEAD
 import AIAssistant from "./components/AIAssistant";
 <<<<<<< HEAD
 import ScrollProgressBar from "@/components/ScrollProgressBar";
 =======
 >>>>>>> upstream/master
 // Ensure that the query client is correctly created
+=======
+import ScrollProgressBar from "@/components/ScrollProgressBar";
+import ScrollToTop from "@/components/ScrollToTop";
+import ScrollRevealProvider from "@/components/ScrollRevealProvider";
+
+>>>>>>> dbc334a (fix)
 const queryClient = new QueryClient();
+
+// Suppress React Router warnings
+const originalConsoleWarn = console.warn;
+console.warn = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('React Router Future Flag Warning')) {
+    return;
+  }
+  originalConsoleWarn.apply(console, args);
+};
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -68,12 +96,19 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+<<<<<<< HEAD
           <BrowserRouter>
 <<<<<<< HEAD
             <ScrollProgressBar />
 =======
 >>>>>>> upstream/master
             <AIAssistant />
+=======
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <ScrollToTop />
+            <ScrollRevealProvider />
+            <ScrollProgressBar />
+>>>>>>> dbc334a (fix)
             <Routes>
               {/* Main Pages */}
               <Route path="/" element={<Index />} />
@@ -92,10 +127,14 @@ function App() {
               <Route path="/faq" element={<FAQ />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/join" element={<Join />} />
+<<<<<<< HEAD
               <Route path="/newsletter" element={<Newsletter />} />
               <Route path="/awards/student" element={<StudentAchievements />} />
               <Route path="/awards/branch" element={<BranchAwards />} />
               <Route path="/upcoming-events" element={<UpcomingEvents />} />
+=======
+
+>>>>>>> dbc334a (fix)
               {/* About Pages */}
               <Route path="/about/ieee" element={<IEEE />} />
               <Route path="/about/ieee-sou-sb" element={<IEEESOUSSB />} />
@@ -109,26 +148,30 @@ function App() {
               <Route path="/about/ieee-sou-sps-sbc" element={<IEEESOUSPSSBC />} />
               <Route path="/about/ieee-sou-cs-sbc" element={<IEEESOUSCSSBC />} />
               <Route path="/about/ieee-sou-sight-sbg" element={<IEEESOUSSIGHTSBG />} />
+
               {/* Team Pages */}
               <Route path="/team/faculty-advisor" element={<TeamFaculty />} />
               <Route path="/team/advisory-board" element={<TeamAdvisory />} />
               <Route path="/team/executive-members" element={<TeamExecutive />} />
               <Route path="/team/core-members" element={<TeamCore />} />
               <Route path="/team/members" element={<TeamMembers />} />
+
               {/* Auth & Admin Panel - Hidden Route (Only accessible via direct URL) */}
               <Route path="/authentication" element={<Authentication />} />
               <Route
                 path="/ieee-admin-portal-sou-2025"
                 element={
                   <ProtectedRoute>
-                    <Admin /> {/* ✅ Includes Events, Awards, Members, Image URL */}
+                    <Admin />
                   </ProtectedRoute>
                 }
               />
+
               {/* Details Pages */}
               <Route path="/eventdetails/:id" element={<EventDetails />} />
               <Route path="/awarddetails/:id" element={<AwardDetails />} />
               <Route path="/memberdetails/:id" element={<MemberDetails />} />
+
               {/* 404 Fallback */}
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -138,4 +181,5 @@ function App() {
     </QueryClientProvider>
   );
 }
+
 export default App;

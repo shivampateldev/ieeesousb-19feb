@@ -20,7 +20,7 @@ export const journeyItems: JourneyItem[] = [
     title: "Foundation",
     details: "IEEE SOUSB was founded with a vision to empower students in systems, operations, and utility management.",
     description: "In 2015, a group of passionate students came together to establish IEEE SOUSB, envisioning a platform where students could collaborate and grow in the fields of systems, operations, and utility management.",
-    imageUrl: "",
+    imageUrl: "/images/journey/foundation.jpg",
     year: "2015",
     gallery: [],
   },

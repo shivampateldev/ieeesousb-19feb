@@ -4,6 +4,9 @@ import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { TypingAnimation } from "@/components/TypingAnimation";
+import { collection, getDocs, query, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
 type MemberType = {
   id: string;
@@ -195,23 +198,51 @@ const STUDENT_MEMBERS: MemberType[] = [
   }
 ];
 
-// Combine all members
-const ALL_MEMBERS = [...FACULTY_MEMBERS, ...ADVISORY_MEMBERS, ...STUDENT_MEMBERS];
-
 export default function Members() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [allMembers, setAllMembers] = useState<MemberType[]>([]);
   const [filteredMembers, setFilteredMembers] = useState<{
     faculty: MemberType[];
     advisory: MemberType[];
     students: MemberType[];
   }>({
-    faculty: FACULTY_MEMBERS,
-    advisory: ADVISORY_MEMBERS,
-    students: STUDENT_MEMBERS,
+    faculty: [],
+    advisory: [],
+    students: [],
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const filtered = ALL_MEMBERS.filter(member =>
+    const unsubscribe = onSnapshot(
+      query(collection(db, "members"), orderBy("enrolledYear", "desc")),
+      (snapshot) => {
+        const membersData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as MemberType[];
+        
+        // Sort by enrolledYear descending
+        const sortedMembers = membersData.sort((a, b) => {
+          const yearA = parseInt(a.enrolledYear);
+          const yearB = parseInt(b.enrolledYear);
+          return yearB - yearA;
+        });
+        
+        setAllMembers(sortedMembers);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Error fetching members:", error);
+        setLoading(false);
+      }
+    );
+
+    // Return cleanup function to unsubscribe from listener
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const filtered = allMembers.filter(member =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.designation.toLowerCase().includes(searchTerm.toLowerCase())
@@ -229,7 +260,7 @@ export default function Members() {
       advisory: filtered.filter(m => m.type === "advisory"),
       students: filteredStudents,
     });
-  }, [searchTerm]);
+  }, [searchTerm, allMembers]);
 
   const getBadgeVariant = (type: string) => {
     switch (type) {
@@ -329,30 +360,39 @@ export default function Members() {
           <div className="mb-12 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Members</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Meet the dedicated team behind IEEE SOU Student Branch who are working to create a vibrant technical community.
+              <TypingAnimation text={"Meet the dedicated team behind IEEE SOU Student Branch who are working to create a vibrant technical community."} />
             </p>
           </div>
 
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-            <div className="relative w-full md:w-96">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Search members..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <span className="ml-3 text-muted-foreground">Loading members...</span>
             </div>
+          ) : (
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                <div className="relative w-full md:w-96">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    type="text"
+                    placeholder="Search members..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
 
-            <div className="text-sm text-muted-foreground">
-              Showing <span className="font-semibold">{totalFilteredCount}</span> members
-            </div>
-          </div>
+                <div className="text-sm text-muted-foreground">
+                  Showing <span className="font-semibold">{totalFilteredCount}</span> members
+                </div>
+              </div>
 
-          {renderMemberSection("Faculty Members", filteredMembers.faculty)}
-          {renderMemberSection("Advisory Board", filteredMembers.advisory)}
-          {renderMemberSection("Student Members", filteredMembers.students)}
+              {renderMemberSection("Faculty Members", filteredMembers.faculty)}
+              {renderMemberSection("Advisory Board", filteredMembers.advisory)}
+              {renderMemberSection("Student Members", filteredMembers.students)}
+            </>
+          )}
         </div>
       </main>
 

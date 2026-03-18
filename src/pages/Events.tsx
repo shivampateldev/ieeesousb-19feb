@@ -4,6 +4,7 @@ import { db } from "../firebase";
 import { CalendarDays, Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { Button } from "@/components/ui/button";
 import { Link, useSearchParams } from "react-router-dom";
 
@@ -88,7 +89,7 @@ export default function Events() {
               {selectedYear === "all" ? "Events" : `${selectedYear} Events`}
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Discover our upcoming and past events, workshops, and conferences designed to enhance your technical knowledge and professional network.
+              <TypingAnimation text="Discover our upcoming and past events, workshops, and conferences designed to enhance your technical knowledge and professional network." />
             </p>
           </div>
 

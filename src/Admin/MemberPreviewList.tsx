@@ -14,15 +14,15 @@ import { db } from "../firebase";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Eye, UserCircle } from "lucide-react";
-import { 
-  AlertDialog, 
-  AlertDialogAction, 
-  AlertDialogCancel, 
-  AlertDialogContent, 
-  AlertDialogDescription, 
-  AlertDialogFooter, 
-  AlertDialogHeader, 
-  AlertDialogTitle 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -50,6 +50,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [membersPerPage] = useState<number>(8);
+  const [selectedYear, setSelectedYear] = useState<string>('all');
 
   const memberTypes = [
     { value: "all", label: "All Members" },
@@ -63,21 +64,21 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
   // Use real-time updates with onSnapshot
   useEffect(() => {
     setLoading(true);
-    
+
     let membersQuery;
     if (activeType === "all") {
       membersQuery = query(
         collection(db, "members"),
-        orderBy("createdAt", "desc")
+        orderBy("name", "asc")
       );
     } else {
       membersQuery = query(
         collection(db, "members"),
         where("type", "==", activeType),
-        orderBy("createdAt", "desc")
+        orderBy("name", "asc")
       );
     }
-    
+
     // Set up real-time listener
     const unsubscribe = onSnapshot(
       membersQuery,
@@ -85,16 +86,22 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
         const membersList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
-        setMembers(membersList);
+        })) as any[];
+        // TASK 10: Sort by displayOrder ascending (default 999 for unset)
+        const sortedMembers = membersList.sort(
+          (a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999)
+        );
+        setMembers(sortedMembers);
         setLoading(false);
+        console.log("Fetched members:", sortedMembers.length);
       },
       (err) => {
+        console.error("Error fetching members:", err);
         setError(`Error fetching members: ${err.message}`);
         setLoading(false);
       }
     );
-    
+
     // Clean up the listener when component unmounts or dependencies change
     return () => unsubscribe();
   }, [activeType, setError]);
@@ -114,11 +121,25 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
     onEdit(member);
   };
 
-  const filteredMembers = members.filter(
-    (member) =>
+  // Get available years from executive members
+  const availableYears = Array.from(
+    new Set(members
+      .filter(m => m.type === 'executive' && m.year)
+      .map(m => m.year))
+  ).sort((a, b) => b - a);
+
+  const filteredMembers = members.filter((member) => {
+    // Apply year filter for Executive Committee
+    if (activeType === 'executive' && selectedYear !== 'all' && member.year !== parseInt(selectedYear)) {
+      return false;
+    }
+
+    // Apply search filter
+    return (
       member.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       member.position?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    );
+  });
 
   const indexOfLastMember = currentPage * membersPerPage;
   const indexOfFirstMember = indexOfLastMember - membersPerPage;
@@ -136,17 +157,47 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
         {memberTypes.map((type) => (
           <button
             key={type.value}
-            className={`px-4 py-3 whitespace-nowrap font-medium transition-colors ${
-              activeType === type.value
+            className={`px-4 py-3 whitespace-nowrap font-medium transition-colors ${activeType === type.value
                 ? "bg-blue-50 text-blue-600 border-b-2 border-blue-600"
                 : "text-gray-600 hover:bg-gray-50"
-            }`}
+              }`}
             onClick={() => setActiveType(type.value)}
           >
             {type.label}
           </button>
         ))}
       </div>
+
+      {/* Year Tabs for Executive Committee */}
+      {activeType === 'executive' && availableYears.length > 0 && (
+        <div className="p-4 border-b">
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedYear('all')}
+              className={`px-3 py-1.5 text-sm rounded-md ${
+                selectedYear === 'all'
+                  ? "bg-purple-100 text-purple-700 font-medium"
+                  : "bg-gray-100 text-gray-600"
+              }`}
+            >
+              All Years
+            </button>
+            {availableYears.map((year) => (
+              <button
+                key={year}
+                onClick={() => setSelectedYear(year.toString())}
+                className={`px-3 py-1.5 text-sm rounded-md ${
+                  selectedYear === year.toString()
+                    ? "bg-blue-100 text-blue-700 font-medium"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Search Bar */}
       <div className="p-4">
@@ -179,8 +230,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
           {currentMembers.map((member) => (
             <div
               key={member.id}
-              className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => navigate(`/memberdetails/${member.id}`)}
+              className="bg-white border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="aspect-w-1 aspect-h-1 bg-gray-100">
                 {member.image ? (
@@ -231,7 +281,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline"
-                      onClick={(e) => e.stopPropagation()} // Prevent navigation to member details
+                      onClick={(e) => e.stopPropagation()}
                     >
                       LinkedIn
                     </a>
@@ -267,7 +317,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
                     </button>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent navigation
+                        e.stopPropagation();
                         handleEdit(member);
                       }}
                       title="Edit"
@@ -289,7 +339,7 @@ const MemberPreviewList: React.FC<MemberPreviewListProps> = ({
                     </button>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent navigation
+                        e.stopPropagation();
                         setConfirmDelete(member.id);
                       }}
                       title="Delete"

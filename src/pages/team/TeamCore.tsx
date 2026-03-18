@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Search, Linkedin } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Input } from "@/components/ui/input";
+import { TypingAnimation } from "@/components/TypingAnimation";
 import { db } from "@/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
 
 // Define the committee titles that we expect to find in the database
 const COMMITTEE_TITLES = [
@@ -33,7 +34,7 @@ export default function TeamCore() {
   useEffect(() => {
     async function fetchCoreMembers() {
       const membersRef = collection(db, "members");
-      const q = query(membersRef, where("type", "==", "core"));
+      const q = query(membersRef, where("type", "==", "core"), orderBy("displayOrder", "asc"));
       const querySnapshot = await getDocs(q);
 
       const grouped: Record<string, any[]> = {};
@@ -46,7 +47,17 @@ export default function TeamCore() {
         const committee = data.committee;
 
         if (COMMITTEE_TITLES.includes(committee)) {
-          grouped[committee].push({ ...data, id: doc.id });
+          // Normalize position for consistency
+          let position = data.position;
+          if (position?.toLowerCase() === "vice chairperson") {
+            position = "Vice-Chairperson";
+          } else if (position?.toLowerCase() === "interim chairperson") {
+            position = "Interim Chairperson";
+          } else if (position?.toLowerCase() === "interim vice chairperson") {
+            position = "Interim Vice-Chairperson";
+          }
+          
+          grouped[committee].push({ ...data, position, id: doc.id });
         }
       });
 
@@ -88,7 +99,7 @@ export default function TeamCore() {
               Core Committee
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto dark:text-muted-foreground-dark">
-              Meet the core team members of each IEEE committee.
+              <TypingAnimation text={"Meet the core team members of each IEEE committee."} />
             </p>
           </div>
 

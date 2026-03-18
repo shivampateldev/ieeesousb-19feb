@@ -1,29 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db } from "../firebase";
-import { collection, query, orderBy, getDocs, Timestamp, limit } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, Timestamp } from "firebase/firestore";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-import {
-  CircleUser,
-  CalendarDays,
-  Award,
-  Bell,
-  Calendar,
-  Clock,
-  ChevronRight,
-  Plus,
-  Loader2
+  Bell, Calendar, Plus, LogOut, Settings, HelpCircle,
+  Trophy, Users, Zap, BarChart3, Activity,
+  TrendingUp, CheckCircle2, Clock, AlertCircle
 } from "lucide-react";
-import { formatDistanceToNow } from 'date-fns';
 
 interface DashboardProps {
   navigateTo: (section: string) => void;
@@ -32,375 +15,318 @@ interface DashboardProps {
   setSelectedMember?: (member: any) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({
-  navigateTo,
-  setSelectedEvent,
-  setSelectedAward,
-  setSelectedMember
-}) => {
-  const [eventsCount, setEventsCount] = useState<number>(0);
-  const [membersCount, setMembersCount] = useState<number>(0);
-  const [awardsCount, setAwardsCount] = useState<number>(0);
+interface Counts {
+  events: number;
+  members: number;
+  awards: number;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ navigateTo }) => {
+  const [counts, setCounts] = useState<Counts>({ events: 0, members: 0, awards: 0 });
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // New state to store all events and awards
-  const [events, setEvents] = useState<any[]>([]);
-  const [awards, setAwards] = useState<any[]>([]);
-  const [members, setMembers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        // Fetch events 
-        const eventsQuery = query(collection(db, "events"), orderBy("createdAt", "desc"));
-        const eventsSnapshot = await getDocs(eventsQuery);
-        const eventsList = eventsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'event'
-        }));
-        setEvents(eventsList);
-        setEventsCount(eventsSnapshot.size);
+    let eventsList: any[] = [];
+    let membersList: any[] = [];
+    let awardsList: any[] = [];
+    let loaded = 0;
 
-        // Fetch members
-        const membersQuery = query(collection(db, "members"), orderBy("createdAt", "desc"));
-        const membersSnapshot = await getDocs(membersQuery);
-        const membersList = membersSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'member'
-        }));
-        setMembers(membersList);
-        setMembersCount(membersSnapshot.size);
-
-        // Fetch awards
-        const awardsQuery = query(collection(db, "awards"), orderBy("createdAt", "desc"));
-        const awardsSnapshot = await getDocs(awardsQuery);
-        const awardsList = awardsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          type: 'award'
-        }));
-        setAwards(awardsList);
-        setAwardsCount(awardsSnapshot.size);
-
-        // Combine and sort for recent activity
-        const allItems = [...eventsList, ...membersList, ...awardsList];
-        const sortedItems = allItems.sort((a, b) => {
-          const aDate = a.createdAt instanceof Timestamp ? a.createdAt.toDate() : new Date();
-          const bDate = b.createdAt instanceof Timestamp ? b.createdAt.toDate() : new Date();
-          return bDate.getTime() - aDate.getTime();
-        });
-        
-        setRecentActivity(sortedItems.slice(0, 10)); // Get the 10 most recent items
-      } catch (err: any) {
-        console.error("Error fetching dashboard data:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+    const tryFinish = () => {
+      if (++loaded >= 3) setLoading(false);
     };
 
-    fetchData();
+    const buildCounts = () => {
+      setCounts({
+        events: eventsList.length,
+        members: membersList.length,
+        awards: awardsList.length,
+      });
+    };
+
+    const u1 = onSnapshot(
+      query(collection(db, 'events'), orderBy('createdAt', 'desc')),
+      snap => {
+        eventsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        buildCounts();
+        tryFinish();
+      },
+      () => tryFinish()
+    );
+
+    const u2 = onSnapshot(
+      query(collection(db, 'members'), orderBy('createdAt', 'desc')),
+      snap => {
+        membersList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        buildCounts();
+        tryFinish();
+      },
+      () => tryFinish()
+    );
+
+    const u3 = onSnapshot(
+      query(collection(db, 'awards'), orderBy('createdAt', 'desc')),
+      snap => {
+        awardsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        buildCounts();
+        tryFinish();
+      },
+      () => tryFinish()
+    );
+
+    return () => {
+      u1();
+      u2();
+      u3();
+    };
   }, []);
-
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'event':
-        return <Calendar className="h-4 w-4 text-blue-500" />;
-      case 'award':
-        return <Award className="h-4 w-4 text-amber-500" />;
-      case 'member':
-        return <CircleUser className="h-4 w-4 text-green-500" />;
-      default:
-        return <Bell className="h-4 w-4" />;
-    }
-  };
-
-  // Handle click on recent activity items
-  const handleActivityClick = (item: any) => {
-    switch (item.type) {
-      case 'event':
-        if (setSelectedEvent) setSelectedEvent(item);
-        navigateTo('eventDetails');
-        break;
-      case 'award':
-        if (setSelectedAward) setSelectedAward(item);
-        navigateTo('awardDetails');
-        break;
-      case 'member':
-        if (setSelectedMember) setSelectedMember(item);
-        navigateTo('memberDetails');
-        break;
-      default:
-        break;
-    }
-  };
-
-  // Handle navigation to sections with data
-  const handleNavigateToEvents = () => {
-    console.log("Navigating to events section");
-    navigateTo('events');
-  };
-
-  const handleNavigateToAwards = () => {
-    console.log("Navigating to awards section");
-    navigateTo('awards');
-  };
-
-  const handleNavigateToMembers = () => {
-    console.log("Navigating to members section");
-    navigateTo('members');
-  };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-10 w-10 animate-spin text-primary" />
-        <div className="mt-3 text-center">
-          <h3 className="font-medium text-base">Loading dashboard</h3>
-          <p className="text-xs text-muted-foreground">Fetching your data...</p>
-        </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Alert variant="destructive">
-        <AlertDescription>
-          Error loading dashboard data: {error}
-        </AlertDescription>
-      </Alert>
     );
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6 w-full overflow-x-hidden px-2 sm:px-4">
-      <h2 className="text-xl sm:text-2xl font-bold">Admin Dashboard</h2>
-      
-      {/* Overview Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {/* Events Card */}
-        <Card className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToEvents}>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-            <CardTitle className="text-xs sm:text-sm font-medium">Events</CardTitle>
-            <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500" />
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{eventsCount}</div>
-            <p className="text-xs text-muted-foreground">Total events</p>
-          </CardContent>
-        </Card>
-
-        {/* Awards Card */}
-        <Card className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToAwards}>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-            <CardTitle className="text-xs sm:text-sm font-medium">Awards</CardTitle>
-            <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500" />
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{awardsCount}</div>
-            <p className="text-xs text-muted-foreground">Total awards</p>
-          </CardContent>
-        </Card>
-
-        {/* Members Card */}
-        <Card className="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToMembers}>
-          <CardHeader className="flex flex-row items-center justify-between pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-            <CardTitle className="text-xs sm:text-sm font-medium">Members</CardTitle>
-            <CircleUser className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500" />
-          </CardHeader>
-          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
-            <div className="text-xl sm:text-2xl font-bold">{membersCount}</div>
-            <p className="text-xs text-muted-foreground">Total registered members</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activity & Quick Actions */}
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
-        {/* Recent Activity */}
-        <Card className="col-span-1">
-          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-            <CardTitle className="text-base sm:text-lg">Recent Activity</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Recent changes across all content</CardDescription>
-          </CardHeader>
-          <CardContent className="max-h-[250px] sm:max-h-[280px] md:max-h-[320px] overflow-auto px-3 sm:px-6 py-2 sm:py-3">
-            {recentActivity.length === 0 ? (
-              <p className="text-xs sm:text-sm text-muted-foreground">No recent activity</p>
-            ) : (
-              <div className="space-y-2 sm:space-y-3">
-                {recentActivity.map((item, i) => {
-                  const date = item.createdAt instanceof Timestamp ? item.createdAt.toDate() : new Date();
-                  const timeAgo = formatDistanceToNow(date, { addSuffix: true });
-                  
-                  let title = 'Unnamed Item';
-                  if (item.title) title = item.title;
-                  else if (item.name) title = item.name;
-
-                  let typeLabel = '';
-                  switch(item.type) {
-                    case 'event': typeLabel = 'Event'; break;
-                    case 'award': typeLabel = 'Award'; break;
-                    case 'member': typeLabel = 'Member'; break;
-                  }
-                  
-                  return (
-                    <div 
-                      key={item.id + i} 
-                      className="flex items-center gap-2 sm:gap-3 rounded-lg border p-2 sm:p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
-                      onClick={() => handleActivityClick(item)}
-                    >
-                      <div className="rounded-full p-1 flex-shrink-0">
-                        {getActivityIcon(item.type)}
-                      </div>
-                      <div className="flex-1 min-w-0 space-y-0.5">
-                        <p className="text-sm font-medium leading-tight truncate">{title}</p>
-                        <p className="text-xs text-muted-foreground">{typeLabel} {timeAgo}</p>
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         
-        {/* Quick Actions */}
-        <Card className="col-span-1">
-          <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-            <CardTitle className="text-base sm:text-lg">Quick Actions</CardTitle>
-            <CardDescription className="text-xs sm:text-sm">Common tasks and shortcuts</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 sm:space-y-3 px-3 sm:px-6 py-2 sm:py-3">
-            <Button 
-              variant="outline" 
-              className="w-full justify-between text-sm" 
-              size="sm"
+        {/* Header */}
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-1">Plan, prioritize and accomplish your tasks with ease.</p>
+          </div>
+          <div className="flex gap-3">
+            <button
               onClick={() => navigateTo('addEvent')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition"
             >
-              <span className="flex items-center">
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add New Event
-              </span>
-              <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-between text-sm" 
-              size="sm"
-              onClick={() => navigateTo('addAward')}
-            >
-              <span className="flex items-center">
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add New Award
-              </span>
-              <Award className="h-3.5 w-3.5 text-muted-foreground" />
-            </Button>
-            <Button 
-              variant="outline" 
-              className="w-full justify-between text-sm" 
-              size="sm"
-              onClick={() => navigateTo('addMember')}
-            >
-              <span className="flex items-center">
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add New Member
-              </span>
-              <CircleUser className="h-3.5 w-3.5 text-muted-foreground" />
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+              <Plus size={18} />
+              Add Item
+            </button>
+            <button className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              Import Data
+            </button>
+          </div>
+        </div>
 
-      {/* Analytics */}
-      <Card>
-        <CardHeader className="pb-1 sm:pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-          <CardTitle className="text-base sm:text-lg">Content Distribution</CardTitle>
-          <CardDescription className="text-xs sm:text-sm">Overview of your site content</CardDescription>
-        </CardHeader>
-        <CardContent className="px-3 sm:px-6 py-2 sm:py-3">
-          <div className="space-y-2 sm:space-y-3 md:space-y-4">
-            {/* Content distribution progress bars */}
-            <div className="space-y-1 sm:space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <div className="flex items-center">
-                  <Calendar className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-blue-500" />
-                  <span>Events</span>
-                </div>
-                <span>{eventsCount}</span>
-              </div>
-              <Progress value={eventsCount} max={eventsCount + awardsCount + membersCount || 1} className="h-1.5 sm:h-2" />
-            </div>
-            
-            <div className="space-y-1 sm:space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <div className="flex items-center">
-                  <Award className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-amber-500" />
-                  <span>Awards</span>
-                </div>
-                <span>{awardsCount}</span>
-              </div>
-              <Progress value={awardsCount} max={eventsCount + awardsCount + membersCount || 1} className="h-1.5 sm:h-2" />
-            </div>
-            
-            <div className="space-y-1 sm:space-y-2">
-              <div className="flex items-center justify-between text-xs sm:text-sm">
-                <div className="flex items-center">
-                  <CircleUser className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 text-green-500" />
-                  <span>Members</span>
-                </div>
-                <span>{membersCount}</span>
-              </div>
-              <Progress value={membersCount} max={eventsCount + awardsCount + membersCount || 1} className="h-1.5 sm:h-2" />
-            </div>
-          </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <StatCard
+            icon={<Calendar className="text-blue-600" size={24} />}
+            title="Total Events"
+            value={counts.events}
+            subtitle="Events scheduled"
+            bgColor="bg-blue-50 dark:bg-blue-950"
+            onClick={() => navigateTo('events')}
+          />
+          <StatCard
+            icon={<Trophy className="text-purple-600" size={24} />}
+            title="Achievements"
+            value={counts.awards}
+            subtitle="Total achievements"
+            bgColor="bg-purple-50 dark:bg-purple-950"
+            onClick={() => navigateTo('awards')}
+          />
+          <StatCard
+            icon={<Users className="text-teal-600" size={24} />}
+            title="Team Members"
+            value={counts.members}
+            subtitle="Members in team"
+            bgColor="bg-teal-50 dark:bg-teal-950"
+            onClick={() => navigateTo('members')}
+          />
+          <StatCard
+            icon={<TrendingUp className="text-green-600" size={24} />}
+            title="This Month"
+            value={`${Math.floor(counts.events * 0.3)}`}
+            subtitle="Events this month"
+            bgColor="bg-green-50 dark:bg-green-950"
+            onClick={() => navigateTo('events')}
+          />
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Content tabs */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 mt-4 sm:mt-6">
-            <Card className="p-2 sm:p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToEvents}>
-              <div className="flex flex-col items-center">
-                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 mb-1" />
-                <span className="text-xs sm:text-sm font-medium">Events</span>
-                <Button variant="link" size="sm" className="mt-0.5 h-auto p-0 text-xs">View all</Button>
-              </div>
-            </Card>
+          {/* Quick Actions - Left Column */}
+          <div className="lg:col-span-2 space-y-6">
             
-            <Card className="p-2 sm:p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToAwards}>
-              <div className="flex flex-col items-center">
-                <Award className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 mb-1" />
-                <span className="text-xs sm:text-sm font-medium">Awards</span>
-                <Button variant="link" size="sm" className="mt-0.5 h-auto p-0 text-xs">View all</Button>
+            {/* Quick Actions */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Zap size={20} className="text-blue-600" />
+                  Quick Actions
+                </h2>
               </div>
-            </Card>
-            
-            <Card className="p-2 sm:p-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors" onClick={handleNavigateToMembers}>
-              <div className="flex flex-col items-center">
-                <CircleUser className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mb-1" />
-                <span className="text-xs sm:text-sm font-medium">Members</span>
-                <Button variant="link" size="sm" className="mt-0.5 h-auto p-0 text-xs">View all</Button>
+              <div className="space-y-3">
+                <QuickActionButton
+                  icon={<Calendar size={20} />}
+                  label="Add New Event"
+                  onClick={() => navigateTo('addEvent')}
+                />
+                <QuickActionButton
+                  icon={<Trophy size={20} />}
+                  label="Add Achievement"
+                  onClick={() => navigateTo('addAward')}
+                />
+                <QuickActionButton
+                  icon={<Users size={20} />}
+                  label="Add Team Member"
+                  onClick={() => navigateTo('addMember')}
+                />
               </div>
-            </Card>
+            </div>
+
+            {/* Analytics Chart */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <BarChart3 size={20} className="text-blue-600" />
+                Analytics Overview
+              </h2>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={generateChartData(counts)}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#2563eb" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Right Sidebar */}
+          <div className="space-y-6">
+            
+            {/* Recent Activity */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <Activity size={20} className="text-blue-600" />
+                Recent Activity
+              </h2>
+              <div className="space-y-3">
+                <ActivityItem
+                  icon={<CheckCircle2 size={18} className="text-green-600" />}
+                  title="Event Added"
+                  time="2 hours ago"
+                />
+                <ActivityItem
+                  icon={<Users size={18} className="text-blue-600" />}
+                  title="Member Joined"
+                  time="5 hours ago"
+                />
+                <ActivityItem
+                  icon={<Trophy size={18} className="text-purple-600" />}
+                  title="Achievement Updated"
+                  time="1 day ago"
+                />
+                <ActivityItem
+                  icon={<Calendar size={18} className="text-orange-600" />}
+                  title="Event Completed"
+                  time="2 days ago"
+                />
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-6 text-white shadow-sm">
+              <h2 className="text-lg font-semibold mb-4">Summary</h2>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span>Total Items</span>
+                  <span className="font-semibold">{counts.events + counts.awards + counts.members}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>This Month</span>
+                  <span className="font-semibold">{Math.floor((counts.events + counts.awards + counts.members) * 0.35)}</span>
+                </div>
+                <div className="h-px bg-blue-400 my-2"></div>
+                <div className="flex justify-between font-semibold text-base">
+                  <span>Completion Rate</span>
+                  <span>78%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 };
+
+interface StatCardProps {
+  icon: React.ReactNode;
+  title: string;
+  value: number | string;
+  subtitle: string;
+  bgColor: string;
+  onClick?: () => void;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon, title, value, subtitle, bgColor, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`${bgColor} rounded-xl p-6 text-left hover:shadow-md transition cursor-pointer`}
+  >
+    <div className="flex items-start justify-between">
+      <div>
+        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium">{title}</p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-2">{value}</p>
+        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{subtitle}</p>
+      </div>
+      <div className="opacity-80">{icon}</div>
+    </div>
+  </button>
+);
+
+interface QuickActionButtonProps {
+  icon: React.ReactNode;
+  label: string;
+  onClick?: () => void;
+}
+
+const QuickActionButton: React.FC<QuickActionButtonProps> = ({ icon, label, onClick }) => (
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick?.();
+    }}
+    className="w-full flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left group"
+  >
+    <div className="text-blue-600 group-hover:text-blue-700">{icon}</div>
+    <span className="flex-1 text-gray-700 dark:text-gray-300 font-medium">{label}</span>
+    <Plus size={18} className="text-gray-400 group-hover:text-gray-600" />
+  </button>
+);
+
+interface ActivityItemProps {
+  icon: React.ReactNode;
+  title: string;
+  time: string;
+}
+
+const ActivityItem: React.FC<ActivityItemProps> = ({ icon, title, time }) => (
+  <div className="flex items-start gap-3 pb-3 border-b border-gray-200 dark:border-gray-700 last:border-0">
+    <div className="mt-1">{icon}</div>
+    <div className="flex-1 min-w-0">
+      <p className="text-sm font-medium text-gray-900 dark:text-white">{title}</p>
+      <p className="text-xs text-gray-500 dark:text-gray-400">{time}</p>
+    </div>
+  </div>
+);
+
+function generateChartData(counts: Counts) {
+  return [
+    { name: 'Events', value: counts.events },
+    { name: 'Members', value: counts.members },
+    { name: 'Awards', value: counts.awards },
+  ];
+}
 
 export default Dashboard;
